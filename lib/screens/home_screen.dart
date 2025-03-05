@@ -10,6 +10,44 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  void _addNewPlaylist() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String newPlaylistName = '';
+        return AlertDialog(
+          title: const Text('Новый плейлист'),
+          content: TextField(
+            onChanged: (value) {
+              newPlaylistName = value;
+            },
+            decoration: const InputDecoration(
+              hintText: 'Введите название плейлиста',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Отмена'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Создать'),
+              onPressed: () {
+                if (newPlaylistName.isNotEmpty) {
+                  // Здесь можно добавить логику для создания нового плейлиста
+                  print('Создан новый плейлист: $newPlaylistName');
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Фиксированные размеры для имитации экрана телефона
@@ -29,12 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 appBar: AppBar(
                   backgroundColor: const Color(0xFF1D1B29),
                   elevation: 0,
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.search, color: Colors.white),
-                      onPressed: () {},
-                    ),
-                  ],
+                  // Убрана кнопка поиска
                 ),
                 body: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -54,16 +87,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 16),
 
                       // Поле поиска
-                      TextField(
-                        decoration: InputDecoration(
-                          hintText: 'Искать плейлист',
-                          hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                          prefixIcon: const Icon(Icons.search, color: Colors.white),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.1),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
+                      SizedBox(
+                        width: 350, // Фиксированная ширина
+                        height: 50, // Фиксированная высота
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: 'Искать плейлист',
+                            hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                            prefixIcon: const Icon(Icons.search, color: Colors.white),
+                            filled: true,
+                            fillColor: Colors.white.withOpacity(0.1),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 12), // Отступы внутри поля
                           ),
                         ),
                       ),
@@ -124,6 +162,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 onPressed: () {},
                                 size: 100,
                               ),
+                              // Кнопка для добавления нового плейлиста
+                              PlaylistButton(
+                                text: 'Добавить',
+                                color1: Colors.grey,
+                                color2: Colors.grey,
+                                icon: Icons.add,
+                                onPressed: _addNewPlaylist,
+                                size: 100,
+                              ),
                             ],
                           ),
                         ),
@@ -158,55 +205,25 @@ class _HomeScreenState extends State<HomeScreen> {
                             RecentTrackItem(title: 'Movies', artist: 'Conan Gray', duration: '03:10', onPressed: () {}),
                             RecentTrackItem(title: 'Lowkey', artist: 'NIKI', duration: '03:00', onPressed: () {}),
                             RecentTrackItem(title: 'Hurt', artist: 'NewJeans', duration: '02:18', onPressed: () {}),
-                            RecentTrackItem(title: 'Swim', artist: 'Chase Atlantic', duration: '03:57', onPressed: () {}),
-                            RecentTrackItem(title: 'Time', artist: 'NF', duration: '02:13', onPressed: () {}),
-                            RecentTrackItem(title: 'Movies', artist: 'Conan Gray', duration: '03:10', onPressed: () {}),
-                            RecentTrackItem(title: 'Lowkey', artist: 'NIKI', duration: '03:00', onPressed: () {}),
-                            RecentTrackItem(title: 'Hurt', artist: 'NewJeans', duration: '02:18', onPressed: () {}),
+                            RecentTrackItem(title: 'Ocean Eyes', artist: 'Billie Eilish', duration: '03:20', onPressed: () {}),
+                            RecentTrackItem(title: 'Blinding Lights', artist: 'The Weeknd', duration: '03:22', onPressed: () {}),
+                            RecentTrackItem(title: 'Levitating', artist: 'Dua Lipa', duration: '03:23', onPressed: () {}),
+                            RecentTrackItem(title: 'Peaches', artist: 'Justin Bieber', duration: '03:18', onPressed: () {}),
+                            RecentTrackItem(title: 'Drivers License', artist: 'Olivia Rodrigo', duration: '04:02', onPressed: () {}),
+                            RecentTrackItem(title: 'Good 4 U', artist: 'Olivia Rodrigo', duration: '02:58', onPressed: () {}),
+                            RecentTrackItem(title: 'Stay', artist: 'The Kid LAROI & Justin Bieber', duration: '02:21', onPressed: () {}),
+                            RecentTrackItem(title: 'Montero (Call Me By Your Name)', artist: 'Lil Nas X', duration: '02:50', onPressed: () {}),
+                            RecentTrackItem(title: 'Save Your Tears', artist: 'The Weeknd', duration: '03:35', onPressed: () {}),
+                            RecentTrackItem(title: 'Kiss Me More', artist: 'Doja Cat ft. SZA', duration: '03:28', onPressed: () {}),
                           ],
                         ),
                       ),
                     ],
                   ),
                 ),
-                bottomNavigationBar: BottomNavigationBar(
-                  backgroundColor: const Color(0xFF1D1B29),
-                  items: const <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                      icon: ImageIcon(
-                        AssetImage('assets/images/home_icon.png'),
-                        size: 24,
-                        color: Color(0xFF6200EE),
-                      ),
-                      label: 'Home',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: ImageIcon(
-                        AssetImage('assets/images/equalizer_icon.png'),
-                        size: 24,
-                        color: Colors.white,
-                      ),
-                      label: 'Equalizer',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: ImageIcon(
-                        AssetImage('assets/images/library_icon.png'),
-                        size: 24,
-                        color: Colors.white,
-                      ),
-                      label: 'Library',
-                    ),
-                  ],
-                  currentIndex: 0,
-                  selectedItemColor: const Color(0xFF6200EE),
-                  unselectedItemColor: Colors.white54,
-                  onTap: (index) {
-                    // Действие при нажатии на элемент навигации
-                  },
-                ),
               ),
 
-              // Градиентный черный бар
+              // Градиентный прозрачный бар
               Positioned(
                 bottom: 0,
                 left: 0,
@@ -222,6 +239,60 @@ class _HomeScreenState extends State<HomeScreen> {
                         Colors.black.withOpacity(0.8), // Полупрозрачный черный
                       ],
                     ),
+                  ),
+                ),
+              ),
+
+              // Полупрозрачный BottomNavigationBar с градиентом
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.5), // Полупрозрачный черный
+                        Colors.black.withOpacity(0.8), // Более насыщенный черный
+                      ],
+                    ),
+                  ),
+                  child: BottomNavigationBar(
+                    backgroundColor: Colors.transparent, // Прозрачный фон
+                    items: const <BottomNavigationBarItem>[
+                      BottomNavigationBarItem(
+                        icon: ImageIcon(
+                          AssetImage('assets/images/home_icon.png'),
+                          size: 24,
+                          color: Color(0xFF6200EE), // Цвет иконки
+                        ),
+                        label: 'Home',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: ImageIcon(
+                          AssetImage('assets/images/equalizer_icon.png'),
+                          size: 24,
+                          color: Colors.white, // Цвет иконки
+                        ),
+                        label: 'Equalizer',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: ImageIcon(
+                          AssetImage('assets/images/library_icon.png'),
+                          size: 24,
+                          color: Colors.white, // Цвет иконки
+                        ),
+                        label: 'Library',
+                      ),
+                    ],
+                    currentIndex: 0,
+                    selectedItemColor: const Color(0xFF6200EE), // Цвет выбранной иконки
+                    unselectedItemColor: Colors.white54, // Цвет невыбранной иконки
+                    onTap: (index) {
+                      // Действие при нажатии на элемент навигации
+                    },
                   ),
                 ),
               ),
