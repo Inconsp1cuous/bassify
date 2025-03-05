@@ -17,10 +17,10 @@ class RecentTrackItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: const Icon(Icons.music_note, color: Colors.black),
-      title: Text(title, style: const TextStyle(fontSize: 16)),
-      subtitle: Text(artist, style: const TextStyle(fontSize: 14)),
-      trailing: Text(duration, style: const TextStyle(fontSize: 14)),
+      leading: const Icon(Icons.music_note, color: Colors.white),
+      title: Text(title, style: const TextStyle(color: Colors.white, fontSize: 16)),
+      subtitle: Text(artist, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14)),
+      trailing: Text(duration, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14)),
       onTap: onPressed,
     );
   }

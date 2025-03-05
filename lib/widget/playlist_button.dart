@@ -5,6 +5,7 @@ class PlaylistButton extends StatelessWidget {
   final Color color1, color2;
   final IconData icon;
   final VoidCallback onPressed;
+  final double size;
 
   const PlaylistButton({
     Key? key,
@@ -13,13 +14,14 @@ class PlaylistButton extends StatelessWidget {
     required this.color2,
     required this.icon,
     required this.onPressed,
+    required this.size,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 160,
-      height: 160,
+      width: size,
+      height: size,
       child: InkWell(
         onTap: onPressed,
         child: Container(
@@ -41,7 +43,7 @@ class PlaylistButton extends StatelessWidget {
                 text,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
