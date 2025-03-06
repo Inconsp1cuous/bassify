@@ -28,7 +28,7 @@ class RecentTrackItem extends StatelessWidget {
           image: imageUrl != null
               ? DecorationImage(
                   image: NetworkImage(imageUrl!),
-                  fit: BoxFit.cover, // Изображение заполняет квадрат
+                  fit: BoxFit.cover,
                 )
               : null,
         ),
