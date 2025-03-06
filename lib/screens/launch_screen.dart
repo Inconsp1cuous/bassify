@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart';
 
 class LaunchScreen extends StatefulWidget {
+  const LaunchScreen({super.key});
+
   @override
   _LaunchScreenState createState() => _LaunchScreenState();
 }

@@ -29,28 +29,24 @@ class SongPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Заголовок "Song"
-                      const Text(
-                        'Song',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'OpenSans',
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 16), // Отступ как на home_page
-
-                      // Изображение трека
+                      // Область под картинку 350x350
                       Center(
                         child: Container(
-                          width: 200, // Размер изображения
-                          height: 200,
+                          width: 350, // Ширина области
+                          height: 350, // Высота области
                           decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1), // Фон, если картинки нет
                             borderRadius: BorderRadius.circular(16), // Закругленные углы
                             image: const DecorationImage(
                               image: AssetImage('assets/images/song_image.png'), // Ваше изображение трека
                               fit: BoxFit.cover, // Изображение заполняет контейнер
+                            ),
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.music_note, // Стандартная иконка, если картинки нет
+                              size: 100,
+                              color: Colors.white70,
                             ),
                           ),
                         ),
@@ -153,10 +149,4 @@ class SongPage extends StatelessWidget {
       ),
     );
   }
-}
-
-void main() {
-  runApp(const MaterialApp(
-    home: SongPage(),
-  ));
 }

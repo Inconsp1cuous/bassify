@@ -3,7 +3,7 @@ import 'package:Bassify/widget/recent_track_item.dart';
 import 'package:Bassify/widget/playlist_button.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF1D1B29),
       body: Center(
-        child: Container(
+        child: SizedBox(
           width: phoneWidth,
           height: phoneHeight,
           child: Stack(
