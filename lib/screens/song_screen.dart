@@ -1,7 +1,41 @@
 import 'package:flutter/material.dart';
 
-class SongPage extends StatelessWidget {
+class SongPage extends StatefulWidget {
   const SongPage({Key? key}) : super(key: key);
+
+  @override
+  _SongPageState createState() => _SongPageState();
+}
+
+class _SongPageState extends State<SongPage> {
+  bool isPlaying = false;
+  Duration currentPosition = const Duration(minutes: 1, seconds: 28); // Текущее время трека
+  Duration totalDuration = const Duration(minutes: 3, seconds: 46); // Общая продолжительность трека
+
+  // Состояния для кнопок "перемешать" и "повторить"
+  bool isShuffleActive = false;
+  bool isRepeatActive = false;
+
+  void togglePlayPause() {
+    setState(() {
+      isPlaying = !isPlaying;
+    });
+  }
+
+  // Метод для обновления текущего времени (можно вызывать извне)
+  void updateCurrentPosition(Duration newPosition) {
+    setState(() {
+      currentPosition = newPosition;
+    });
+  }
+
+  // Форматирование времени в строку (минуты:секунды)
+  String formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes);
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$minutes:$seconds';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,22 +57,22 @@ class SongPage extends StatelessWidget {
                   backgroundColor: const Color(0xFF1D1B29),
                   elevation: 0,
                   leading: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    icon: Image.asset('assets/images/arrow_back_icon.png', color: Colors.white), // Кастомная иконка
                     onPressed: () {
                       Navigator.pop(context);
                     },
                   ),
                 ),
                 body: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding: const EdgeInsets.only(top: 30, left: 24, right: 24, bottom: 16), // Сдвиг вниз на 30 пикселей
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Область под картинку 350x350
                       Center(
                         child: Container(
-                          width: 350, // Ширина области
-                          height: 350, // Высота области
+                          width: 360, // Ширина области
+                          height: 360, // Высота области
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.1), // Фон, если картинки нет
                             borderRadius: BorderRadius.circular(16), // Закругленные углы
@@ -78,15 +112,23 @@ class SongPage extends StatelessWidget {
                           color: Colors.white70,
                         ),
                       ),
-                      const SizedBox(height: 16), // Отступ как на home_page
+                      const SizedBox(height: 30), // Увеличенный отступ до линии прогресса
 
-                      // Время трека и линия прогресса
+                      // Линия прогресса
+                      LinearProgressIndicator(
+                        value: currentPosition.inSeconds / totalDuration.inSeconds,
+                        backgroundColor: Colors.white.withOpacity(0.1),
+                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                      const SizedBox(height: 8), // Отступ между линией и цифрами времени
+
+                      // Время трека (под линией)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                        children: [
                           Text(
-                            '1:28',
-                            style: TextStyle(
+                            formatDuration(currentPosition), // Текущее время
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                               fontFamily: 'OpenSans',
@@ -94,8 +136,8 @@ class SongPage extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '3:46',
-                            style: TextStyle(
+                            formatDuration(totalDuration), // Общая продолжительность
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                               fontFamily: 'OpenSans',
@@ -104,51 +146,61 @@ class SongPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      LinearProgressIndicator(
-                        value: 1.28 / 3.46,
-                        backgroundColor: Colors.white.withOpacity(0.1),
-                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 40), // Увеличенный отступ до иконок управления
 
                       // Иконки управления воспроизведением
-                      Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.repeat, color: Colors.white),
-                              onPressed: () {
-                                // Действие для повторного запуска трека
-                              },
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Иконка "перемешать" слева
+                          IconButton(
+                            icon: Image.asset(
+                              'assets/images/shuffle_icon.png',
+                              color: isShuffleActive ? const Color(0xFF6200EE) : Colors.white, // Фиолетовый, если активно
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.skip_previous, color: Colors.white),
-                              onPressed: () {
-                                // Действие для перехода к предыдущему треку
-                              },
+                            onPressed: () {
+                              setState(() {
+                                isShuffleActive = !isShuffleActive; // Переключение состояния
+                              });
+                            },
+                          ),
+                          // Центральные иконки: назад, пуск/пауза, вперед
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                icon: Image.asset('assets/images/previous_icon.png', color: Colors.white),
+                                onPressed: () {
+                                  // Действие для перехода к предыдущему треку
+                                },
+                              ),
+                              IconButton(
+                                icon: isPlaying
+                                    ? Image.asset('assets/images/pause_icon.png')
+                                    : Image.asset('assets/images/play_icon.png'),
+                                onPressed: togglePlayPause,
+                              ),
+                              IconButton(
+                                icon: Image.asset('assets/images/next_icon.png', color: Colors.white),
+                                onPressed: () {
+                                  // Действие для перехода к следующему треку
+                                },
+                              ),
+                            ],
+                          ),
+                          // Иконка "повтор" справа
+                          IconButton(
+                            icon: Image.asset(
+                              'assets/images/repeat_icon.png',
+                              color: isRepeatActive ? const Color(0xFF6200EE) : Colors.white, // Фиолетовый, если активно
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.play_arrow, color: Colors.white),
-                              onPressed: () {
-                                // Действие для воспроизведения/паузы
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.skip_next, color: Colors.white),
-                              onPressed: () {
-                                // Действие для перехода к следующему треку
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.shuffle, color: Colors.white),
-                              onPressed: () {
-                                // Действие для перемешивания треков
-                              },
-                            ),
-                          ],
-                        ),
+                            onPressed: () {
+                              setState(() {
+                                isRepeatActive = !isRepeatActive; // Переключение состояния
+                              });
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
