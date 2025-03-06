@@ -10,44 +10,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  void _addNewPlaylist() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        String newPlaylistName = '';
-        return AlertDialog(
-          title: const Text('Новый плейлист'),
-          content: TextField(
-            onChanged: (value) {
-              newPlaylistName = value;
-            },
-            decoration: const InputDecoration(
-              hintText: 'Введите название плейлиста',
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Отмена'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Создать'),
-              onPressed: () {
-                if (newPlaylistName.isNotEmpty) {
-                  // Здесь можно добавить логику для создания нового плейлиста
-                  print('Создан новый плейлист: $newPlaylistName');
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     // Фиксированные размеры для имитации экрана телефона
@@ -192,6 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Color(0xFF999595),
                         ),
                       ),
+                      
                       const SizedBox(height: 16),
 
                       // Контейнер для списка треков
@@ -275,4 +238,138 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+  void _addNewPlaylist() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      String newPlaylistName = '';
+      return Dialog(
+        backgroundColor: Colors.black.withOpacity(0.85), // Полупрозрачный фон
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16), // Закругленные углы
+        ),
+        child: Container(
+          width: 320, // Ширина диалогового окна
+          height: 450, // Высота диалогового окна
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Минимальный размер по высоте
+            crossAxisAlignment: CrossAxisAlignment.center, // Центрирование по горизонтали
+            children: [
+              // Поле для загрузки изображения (по центру)
+              GestureDetector(
+                onTap: () {
+                  // Логика для выбора изображения
+                  print('Выбрать изображение');
+                },
+                child: Container(
+                  width: 172, // Ширина контейнера для изображения
+                  height: 172, // Высота контейнера для изображения
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.add_photo_alternate,
+                      color: Colors.white70,
+                      size: 40,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Заголовок "Новый плейлист" (по центру и под картинкой)
+              const Text(
+                'Новый плейлист',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontFamily: 'OpenSans',
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Поле для ввода названия плейлиста
+              TextField(
+                onChanged: (value) {
+                  newPlaylistName = value;
+                },
+                decoration: InputDecoration(
+                  hintText: 'Напишите название плейлиста',
+                  hintStyle: TextStyle(
+                    color: Colors.white.withOpacity(0.5),
+                  ),
+                  filled: true,
+                  fillColor: Colors.transparent, // Прозрачный фон
+                  border: InputBorder.none, // Убираем границу
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 12, horizontal: 16),
+                ),
+                style: const TextStyle(color: Colors.white),
+                textAlign: TextAlign.center, // Текст по центру
+              ),
+              const SizedBox(height: 8),
+
+              // Линия под полем ввода
+              Container(
+                height: 1, // Высота линии
+                color: Colors.white.withOpacity(0.5), // Цвет линии
+                margin: const EdgeInsets.symmetric(vertical: 8), // Отступы
+              ),
+              const SizedBox(height: 24),
+
+              // Кнопки "Отменить" и "Создать"
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Закрыть диалоговое окно
+                    },
+                    child: const Text(
+                      'Отменить',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 16,
+                        fontFamily: 'OpenSans',
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (newPlaylistName.isNotEmpty) {
+                        // Логика для создания нового плейлиста
+                        print('Создан новый плейлист: $newPlaylistName');
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6200EE), // Фиолетовый цвет кнопки
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50), // Закругление углов 50
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
+                    ),
+                    child: const Text(
+                      'Создать',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontFamily: 'OpenSans',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
 }
