@@ -10,7 +10,7 @@ class PlaylistButton extends StatelessWidget {
   final String? imageUrl; // URL изображения (если есть)
 
   const PlaylistButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.color1,
     required this.color2,
@@ -18,7 +18,7 @@ class PlaylistButton extends StatelessWidget {
     required this.onPressed,
     required this.size,
     this.imageUrl,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -8,13 +8,13 @@ class RecentTrackItem extends StatelessWidget {
   final String? imageUrl; // URL изображения (если есть)
 
   const RecentTrackItem({
-    Key? key,
+    super.key,
     required this.title,
     required this.artist,
     required this.duration,
     required this.onPressed,
     this.imageUrl,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
