@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'screens/playlist_screen.dart'; // Импортируем экран плейлиста
-import 'screens/library_screen.dart';
+import 'screens/home_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 /*class MyApp extends StatelessWidget {
@@ -21,14 +20,17 @@ void main() {
 */
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Bassify',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: LibraryScreen(), // Устанавливаем PlaylistScreen как стартовую страницу
+      home: HomeScreen(),
     );
   }
 }

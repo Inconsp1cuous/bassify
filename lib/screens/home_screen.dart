@@ -29,12 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 appBar: AppBar(
                   backgroundColor: const Color(0xFF1D1B29),
                   elevation: 0,
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.search, color: Colors.white),
-                      onPressed: () {},
-                    ),
-                  ],
+                  // Убрана кнопка поиска
                 ),
                 body: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -53,17 +48,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Поле поиска
-                      TextField(
-                        decoration: InputDecoration(
-                          hintText: 'Искать плейлист',
-                          hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                          prefixIcon: const Icon(Icons.search, color: Colors.white),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.1),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
+                      // Поле поиска с закругленными углами
+                      Container(
+                        width: 350, // Фиксированная ширина
+                        height: 50, // Фиксированная высота
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20), // Закругленные углы
+                        ),
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: 'Искать плейлист',
+                            hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                            prefixIcon: const Icon(Icons.search, color: Colors.white),
+                            border: InputBorder.none, // Убираем стандартную границу
+                            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16), // Отступы внутри поля
                           ),
                         ),
                       ),
@@ -91,6 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 icon: Icons.favorite,
                                 onPressed: () {},
                                 size: 100,
+                                imageUrl: null, // Нет фото, будет стандартный вид
                               ),
                               PlaylistButton(
                                 text: 'Рок музыка',
@@ -99,6 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 icon: Icons.music_note,
                                 onPressed: () {},
                                 size: 100,
+                                imageUrl: null,
                               ),
                               PlaylistButton(
                                 text: 'Поп музыка',
@@ -107,6 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 icon: Icons.music_note,
                                 onPressed: () {},
                                 size: 100,
+                                imageUrl: null, // Нет фото, будет стандартный вид
                               ),
                               PlaylistButton(
                                 text: 'В машину',
@@ -115,6 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 icon: Icons.drive_eta,
                                 onPressed: () {},
                                 size: 100,
+                                imageUrl: null, // Нет фото, будет стандартный вид
                               ),
                               PlaylistButton(
                                 text: 'Lo-fi Beats',
@@ -123,12 +126,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                 icon: Icons.music_note,
                                 onPressed: () {},
                                 size: 100,
+                                imageUrl: null, // Нет фото, будет стандартный вид
+                              ),
+                              // Кнопка для добавления нового плейлиста
+                              PlaylistButton(
+                                text: 'Добавить',
+                                color1: Colors.grey,
+                                color2: Colors.grey,
+                                icon: Icons.add,
+                                onPressed: _addNewPlaylist,
+                                size: 100,
+                                imageUrl: null,
                               ),
                             ],
                           ),
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 65),
 
                       // Заголовок "Недавние треки"
                       const Text(
@@ -140,12 +154,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Color(0xFF999595),
                         ),
                       ),
+                      
                       const SizedBox(height: 16),
 
                       // Контейнер для списка треков
                       Container(
-                        width: 350, // 85% от ширины экрана
-                        height: 340, // 35% от высоты экрана
+                        width: 350,
+                        height: 340,
                         decoration: BoxDecoration(
                           color: const Color(0xFF1D1B29),
                           borderRadius: BorderRadius.circular(16),
@@ -169,59 +184,51 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                bottomNavigationBar: BottomNavigationBar(
-                  backgroundColor: const Color(0xFF1D1B29),
-                  items: const <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                      icon: ImageIcon(
-                        AssetImage('assets/images/home_icon.png'),
-                        size: 24,
-                        color: Color(0xFF6200EE),
-                      ),
-                      label: 'Home',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: ImageIcon(
-                        AssetImage('assets/images/equalizer_icon.png'),
-                        size: 24,
-                        color: Colors.white,
-                      ),
-                      label: 'Equalizer',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: ImageIcon(
-                        AssetImage('assets/images/library_icon.png'),
-                        size: 24,
-                        color: Colors.white,
-                      ),
-                      label: 'Library',
-                    ),
-                  ],
-                  currentIndex: 0,
-                  selectedItemColor: const Color(0xFF6200EE),
-                  unselectedItemColor: Colors.white54,
-                  onTap: (index) {
-                    // Действие при нажатии на элемент навигации
-                  },
-                ),
               ),
 
-              // Градиентный черный бар
+              // Полупрозрачный BottomNavigationBar
               Positioned(
                 bottom: 0,
                 left: 0,
                 right: 0,
                 child: Container(
-                  height: 100, // Высота градиентного бара
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent, // Полностью прозрачный
-                        Colors.black.withOpacity(0.8), // Полупрозрачный черный
-                      ],
-                    ),
+                    color: Colors.black.withOpacity(0.5), // Полупрозрачный черный фон
+                  ),
+                  child: BottomNavigationBar(
+                    backgroundColor: Colors.transparent, // Прозрачный фон
+                    items: const <BottomNavigationBarItem>[
+                      BottomNavigationBarItem(
+                        icon: ImageIcon(
+                          AssetImage('assets/images/home_icon.png'),
+                          size: 24,
+                          color: Color(0xFF6200EE), // Цвет иконки (непрозрачный)
+                        ),
+                        label: 'Home',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: ImageIcon(
+                          AssetImage('assets/images/equalizer_icon.png'),
+                          size: 24,
+                          color: Colors.white, // Цвет иконки (непрозрачный)
+                        ),
+                        label: 'Equalizer',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: ImageIcon(
+                          AssetImage('assets/images/library_icon.png'),
+                          size: 24,
+                          color: Colors.white, // Цвет иконки (непрозрачный)
+                        ),
+                        label: 'Library',
+                      ),
+                    ],
+                    currentIndex: 0,
+                    selectedItemColor: const Color(0xFF6200EE), // Цвет выбранной иконки (непрозрачный)
+                    unselectedItemColor: Colors.white54, // Цвет невыбранной иконки (полупрозрачный)
+                    onTap: (index) {
+                      // Действие при нажатии на элемент навигации
+                    },
                   ),
                 ),
               ),
@@ -231,4 +238,138 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+  void _addNewPlaylist() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      String newPlaylistName = '';
+      return Dialog(
+        backgroundColor: Colors.black.withOpacity(0.85), // Полупрозрачный фон
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16), // Закругленные углы
+        ),
+        child: Container(
+          width: 320, // Ширина диалогового окна
+          height: 450, // Высота диалогового окна
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Минимальный размер по высоте
+            crossAxisAlignment: CrossAxisAlignment.center, // Центрирование по горизонтали
+            children: [
+              // Поле для загрузки изображения (по центру)
+              GestureDetector(
+                onTap: () {
+                  // Логика для выбора изображения
+                  print('Выбрать изображение');
+                },
+                child: Container(
+                  width: 172, // Ширина контейнера для изображения
+                  height: 172, // Высота контейнера для изображения
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.add_photo_alternate,
+                      color: Colors.white70,
+                      size: 40,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Заголовок "Новый плейлист" (по центру и под картинкой)
+              const Text(
+                'Новый плейлист',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontFamily: 'OpenSans',
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Поле для ввода названия плейлиста
+              TextField(
+                onChanged: (value) {
+                  newPlaylistName = value;
+                },
+                decoration: InputDecoration(
+                  hintText: 'Напишите название плейлиста',
+                  hintStyle: TextStyle(
+                    color: Colors.white.withOpacity(0.5),
+                  ),
+                  filled: true,
+                  fillColor: Colors.transparent, // Прозрачный фон
+                  border: InputBorder.none, // Убираем границу
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 12, horizontal: 16),
+                ),
+                style: const TextStyle(color: Colors.white),
+                textAlign: TextAlign.center, // Текст по центру
+              ),
+              const SizedBox(height: 8),
+
+              // Линия под полем ввода
+              Container(
+                height: 1, // Высота линии
+                color: Colors.white.withOpacity(0.5), // Цвет линии
+                margin: const EdgeInsets.symmetric(vertical: 8), // Отступы
+              ),
+              const SizedBox(height: 24),
+
+              // Кнопки "Отменить" и "Создать"
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Закрыть диалоговое окно
+                    },
+                    child: const Text(
+                      'Отменить',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 16,
+                        fontFamily: 'OpenSans',
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (newPlaylistName.isNotEmpty) {
+                        // Логика для создания нового плейлиста
+                        print('Создан новый плейлист: $newPlaylistName');
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6200EE), // Фиолетовый цвет кнопки
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50), // Закругление углов 50
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
+                    ),
+                    child: const Text(
+                      'Создать',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontFamily: 'OpenSans',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
 }
