@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'screens/playlist_screen.dart'; // Импортируем экран плейлиста
-import 'screens/library_screen.dart';
+import 'screens/library_screen.dart'; // Импортируем экран либы
 
 void main() {
   runApp(MyApp());
 }
 
-/*class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,9 +18,9 @@ void main() {
     );
   }
 }
-*/
 
-class MyApp extends StatelessWidget {
+
+/*class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,3 +32,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+*/

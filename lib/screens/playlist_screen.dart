@@ -4,75 +4,131 @@ class PlaylistScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF1D1B29),
-        foregroundColor: Colors.white,
-        title: Text('Ваш плейлист'),
-        centerTitle: true,
-        titleSpacing: 50, // Сдвигаем элементы ближе к центру
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, size: 28), // Увеличенный размер иконки
-          onPressed: () {
-            Navigator.pop(context);
-          },
-  ),
-  actions: [
-    IconButton(
-      icon: Icon(Icons.search, size: 56), // Увеличенный размер иконки
-      onPressed: () {
-        print("Нажата кнопка поиска");
-      },
-    ),
-  ],
-),
+      backgroundColor: Color(0xFF1D1B29), // Устанавливаем фон для всего экрана
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 30, left: 24, right: 24, bottom: 16), // Сдвиг вниз на 30 пикселей
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Заголовок, кнопка "Назад" и кнопка поиска
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back_ios, size: 28, color: Colors.white), // Кнопка "Назад"
+                    onPressed: () {
+                      Navigator.pop(context); // Возврат на предыдущий экран
+                    },
+                  ),
+                  Spacer(), // Растягиваем пространство между элементами
+                  Text(
+                    'Ваш плейлист',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Spacer(), // Растягиваем пространство между элементами
+                  IconButton(
+                    icon: Icon(Icons.search, size: 28, color: Colors.white), // Кнопка поиска
+                    onPressed: () {
+                      print("Нажата кнопка поиска");
+                    },
+                  ),
+                ],
+              ),
+              SizedBox(height: 16), // Отступ между заголовком и картинкой
 
-      body: Container(
-        color: Color(0xFF1D1B29),
-        padding: EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            // Квадратная картинка плейлиста с закруглёнными углами
-            Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20), // Радиус скругления углов
-                child: Image.asset(
-                  'assets/images/image_playlist.png', // Основное изображение
-                  width: 200,
-                  height: 200,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    // Запасное изображение, если основное не загрузилось
-                    return Image.asset(
-                      'assets/images/load_playlist_error.png', // Путь к запасному изображению
-                      width: 200,
-                      height: 200,
-                      fit: BoxFit.cover,
-                    );
-                  },
+              // Квадратная картинка плейлиста с закруглёнными углами
+              Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20), // Радиус скругления углов
+                  child: Image.asset(
+                    'assets/images/image_playlist.png', // Основное изображение
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      // Запасное изображение, если основное не загрузилось
+                      return Image.asset(
+                        'assets/images/load_playlist_error.png', // Путь к запасному изображению
+                        width: 200,
+                        height: 200,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-            Center(
-              child: Text(
-                'Поп музыка',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+              SizedBox(height: 16),
+              Center(
+                child: Text(
+                  'Поп музыка',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
+              SizedBox(height: 16),
+              Expanded(
+                child: ListView(
+                  children: [
+                    _buildSong('Coffe', 'Kainbeats', '01:44', 'assets/images/song1.png'),
+                    _buildSong('raindrops', 'rainyyxx', '02:03', 'assets/images/song2.png'),
+                    _buildSong('Tokyo', 'SmYang', '01:40', 'assets/images/song3.png'),
+                    _buildSong('Lullaby', 'iamfinerow', '04:12', 'assets/images/song4.png'),
+                    _buildSong('Back To Her Men', 'Demien Rice', '03:07', 'assets/images/song5.png'),
+                    _buildSong('Hoting Bling', 'Bille Elish', '03:00', 'assets/images/song6.png'),
+                    _buildSong('Antretor', 'yann tiarsen', '02:10', 'assets/images/song7.png'),
+                    _buildSong('Nightmare', 'Halsey', '01:49', 'assets/images/song8.png'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.5), // Полупрозрачный черный фон
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.transparent, // Прозрачный фон
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage('assets/images/home_icon.png'),
+                size: 24,
+                color: Color(0xFF6200EE), // Цвет иконки (непрозрачный)
+              ),
+              label: 'Home',
             ),
-            SizedBox(height: 16),
-            _buildSong('Coffe', 'Kainbeats', '01:44', 'assets/images/song1.png'),
-            _buildSong('raindrops', 'rainyyxx', '02:03', 'assets/images/song2.png'),
-            _buildSong('Tokyo', 'SmYang', '01:40', 'assets/images/song3.png'),
-            _buildSong('Lullaby', 'iamfinerow', '04:12', 'assets/images/song4.png'),
-            _buildSong('Back To Her Men', 'Demien Rice', '03:07', 'assets/images/song5.png'),
-            _buildSong('Hoting Bling', 'Bille Elish', '03:00', 'assets/images/song6.png'),
-            _buildSong('Antretor', 'yann tiarsen', '02:10', 'assets/images/song7.png'),
-            _buildSong('Nightmare', 'Halsey', '01:49', 'assets/images/song8.png'),
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage('assets/images/equalizer_icon.png'),
+                size: 24,
+                color: Colors.white, // Цвет иконки (непрозрачный)
+              ),
+              label: 'Equalizer',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage('assets/images/library_icon.png'),
+                size: 24,
+                color: Colors.white, // Цвет иконки (непрозрачный)
+              ),
+              label: 'Library',
+            ),
           ],
+          currentIndex: 0,
+          selectedItemColor: const Color(0xFF6200EE), // Цвет выбранной иконки (непрозрачный)
+          unselectedItemColor: Colors.white54, // Цвет невыбранной иконки (полупрозрачный)
+          onTap: (index) {
+            // Действие при нажатии на элемент навигации
+          },
         ),
       ),
     );

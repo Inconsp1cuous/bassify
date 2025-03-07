@@ -7,7 +7,7 @@ class LibraryScreen extends StatelessWidget {
       backgroundColor: Color(0xFF1D1B29),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          padding: const EdgeInsets.only(top: 30, left: 24, right: 24, bottom: 16), // Сдвиг вниз на 30 пикселей
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -54,6 +54,46 @@ class LibraryScreen extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.5), // Полупрозрачный черный фон
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.transparent, // Прозрачный фон
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage('assets/images/home_icon.png'),
+                size: 24,
+                color: Color(0xFF6200EE), // Цвет иконки (непрозрачный)
+              ),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage('assets/images/equalizer_icon.png'),
+                size: 24,
+                color: Colors.white, // Цвет иконки (непрозрачный)
+              ),
+              label: 'Equalizer',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage('assets/images/library_icon.png'),
+                size: 24,
+                color: Colors.white, // Цвет иконки (непрозрачный)
+              ),
+              label: 'Library',
+            ),
+          ],
+          currentIndex: 0,
+          selectedItemColor: const Color(0xFF6200EE), // Цвет выбранной иконки (непрозрачный)
+          unselectedItemColor: Colors.white54, // Цвет невыбранной иконки (полупрозрачный)
+          onTap: (index) {
+            // Действие при нажатии на элемент навигации
+          },
         ),
       ),
     );
