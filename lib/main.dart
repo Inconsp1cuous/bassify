@@ -1,3 +1,7 @@
+import 'package:Bassify/screens/equalizer_screen.dart';
+import 'package:Bassify/screens/library_screen.dart';
+import 'package:Bassify/screens/playlist_screen.dart';
+import 'package:Bassify/screens/song_screen.dart';
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/launch_screen.dart';
@@ -31,7 +35,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: LaunchScreen(),
+      home: EqualizerScreen(),
     );
   }
 }
