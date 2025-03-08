@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 class LibraryScreen extends StatelessWidget {
+  const LibraryScreen({Key? key}) : super(key: key);
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF1D1B29),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(top: 30, left: 24, right: 24, bottom: 16), // Сдвиг вниз на 30 пикселей
+          padding: const EdgeInsets.only(top: 30, left: 24, right: 24, bottom: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -17,21 +19,21 @@ class LibraryScreen extends StatelessWidget {
                   Text(
                     'Ваша музыка',
                     style: TextStyle(
-                      fontSize: 28,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
                   Spacer(),
                   IconButton(
-                    icon: Icon(Icons.search, size: 50, color: Colors.white),
+                    icon: Icon(Icons.search, size: 28, color: Colors.white),
                     onPressed: () {
                       print("Нажата кнопка поиска");
                     },
                   ),
                 ],
               ),
-              SizedBox(height: 16), // Отступ перед списком песен
+              SizedBox(height: 16),
               Expanded(
                 child: ListView(
                   children: [
@@ -56,46 +58,6 @@ class LibraryScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5), // Полупрозрачный черный фон
-        ),
-        child: BottomNavigationBar(
-          backgroundColor: Colors.transparent, // Прозрачный фон
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: ImageIcon(
-                AssetImage('assets/images/home_icon.png'),
-                size: 24,
-                color: Color(0xFF6200EE), // Цвет иконки (непрозрачный)
-              ),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: ImageIcon(
-                AssetImage('assets/images/equalizer_icon.png'),
-                size: 24,
-                color: Colors.white, // Цвет иконки (непрозрачный)
-              ),
-              label: 'Equalizer',
-            ),
-            BottomNavigationBarItem(
-              icon: ImageIcon(
-                AssetImage('assets/images/library_icon.png'),
-                size: 24,
-                color: Colors.white, // Цвет иконки (непрозрачный)
-              ),
-              label: 'Library',
-            ),
-          ],
-          currentIndex: 0,
-          selectedItemColor: const Color(0xFF6200EE), // Цвет выбранной иконки (непрозрачный)
-          unselectedItemColor: Colors.white54, // Цвет невыбранной иконки (полупрозрачный)
-          onTap: (index) {
-            // Действие при нажатии на элемент навигации
-          },
-        ),
-      ),
     );
   }
 
@@ -104,7 +66,6 @@ class LibraryScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          // Обложка песни
           Container(
             width: 60,
             height: 60,
@@ -136,7 +97,6 @@ class LibraryScreen extends StatelessWidget {
               ),
             ),
           ),
-          // Название песни и исполнитель
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,7 +120,6 @@ class LibraryScreen extends StatelessWidget {
               ],
             ),
           ),
-          // Длительность песни
           if (duration.isNotEmpty)
             Text(
               duration,

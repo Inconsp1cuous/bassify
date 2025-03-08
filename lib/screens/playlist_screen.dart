@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 class PlaylistScreen extends StatelessWidget {
+  const PlaylistScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1D1B29), // Устанавливаем фон для всего экрана
+      backgroundColor: const Color(0xFF1D1B29), // Устанавливаем фон для всего экрана
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(top: 30, left: 24, right: 24, bottom: 16), // Сдвиг вниз на 30 пикселей
@@ -15,13 +17,13 @@ class PlaylistScreen extends StatelessWidget {
               Row(
                 children: [
                   IconButton(
-                    icon: Icon(Icons.arrow_back_ios, size: 28, color: Colors.white), // Кнопка "Назад"
+                    icon: const Icon(Icons.arrow_back_ios, size: 28, color: Colors.white), // Кнопка "Назад"
                     onPressed: () {
                       Navigator.pop(context); // Возврат на предыдущий экран
                     },
                   ),
-                  Spacer(), // Растягиваем пространство между элементами
-                  Text(
+                  const Spacer(), // Растягиваем пространство между элементами
+                  const Text(
                     'Ваш плейлист',
                     style: TextStyle(
                       color: Colors.white,
@@ -29,16 +31,16 @@ class PlaylistScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Spacer(), // Растягиваем пространство между элементами
+                  const Spacer(), // Растягиваем пространство между элементами
                   IconButton(
-                    icon: Icon(Icons.search, size: 28, color: Colors.white), // Кнопка поиска
+                    icon: const Icon(Icons.search, size: 28, color: Colors.white), // Кнопка поиска
                     onPressed: () {
                       print("Нажата кнопка поиска");
                     },
                   ),
                 ],
               ),
-              SizedBox(height: 16), // Отступ между заголовком и картинкой
+              const SizedBox(height: 16), // Отступ между заголовком и картинкой
 
               // Квадратная картинка плейлиста с закруглёнными углами
               Center(
@@ -61,8 +63,8 @@ class PlaylistScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
-              Center(
+              const SizedBox(height: 16),
+              const Center(
                 child: Text(
                   'Поп музыка',
                   style: TextStyle(
@@ -72,7 +74,7 @@ class PlaylistScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Expanded(
                 child: ListView(
                   children: [
@@ -91,46 +93,6 @@ class PlaylistScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5), // Полупрозрачный черный фон
-        ),
-        child: BottomNavigationBar(
-          backgroundColor: Colors.transparent, // Прозрачный фон
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: ImageIcon(
-                AssetImage('assets/images/home_icon.png'),
-                size: 24,
-                color: Color(0xFF6200EE), // Цвет иконки (непрозрачный)
-              ),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: ImageIcon(
-                AssetImage('assets/images/equalizer_icon.png'),
-                size: 24,
-                color: Colors.white, // Цвет иконки (непрозрачный)
-              ),
-              label: 'Equalizer',
-            ),
-            BottomNavigationBarItem(
-              icon: ImageIcon(
-                AssetImage('assets/images/library_icon.png'),
-                size: 24,
-                color: Colors.white, // Цвет иконки (непрозрачный)
-              ),
-              label: 'Library',
-            ),
-          ],
-          currentIndex: 0,
-          selectedItemColor: const Color(0xFF6200EE), // Цвет выбранной иконки (непрозрачный)
-          unselectedItemColor: Colors.white54, // Цвет невыбранной иконки (полупрозрачный)
-          onTap: (index) {
-            // Действие при нажатии на элемент навигации
-          },
-        ),
-      ),
     );
   }
 
@@ -143,7 +105,7 @@ class PlaylistScreen extends StatelessWidget {
           Container(
             width: 60,
             height: 60,
-            margin: EdgeInsets.only(right: 16),
+            margin: const EdgeInsets.only(right: 16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12), // Закруглённые углы
               border: Border.all(
@@ -179,7 +141,7 @@ class PlaylistScreen extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -188,7 +150,7 @@ class PlaylistScreen extends StatelessWidget {
                 if (artist.isNotEmpty)
                   Text(
                     artist,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white70,
                       fontSize: 14,
                     ),
@@ -200,7 +162,7 @@ class PlaylistScreen extends StatelessWidget {
           if (duration.isNotEmpty)
             Text(
               duration,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white70,
                 fontSize: 14,
               ),
