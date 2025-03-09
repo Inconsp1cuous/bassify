@@ -18,7 +18,10 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
   double _threeDEffectValue = 0;
 
   // Выбранная настройка
-  String _selectedSetting = 'Рок';
+  String _selectedSetting = 'По умолчанию';
+
+  // Цвет триггера
+  static const Color triggerColor = Color(0xFF999595);
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +30,7 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
     double phoneHeight = 917;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1D1B29), // Фон как на home_page
+      backgroundColor: const Color(0xFF1D1B29),
       body: Center(
         child: Container(
           width: phoneWidth,
@@ -39,7 +42,6 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                 appBar: AppBar(
                   backgroundColor: const Color(0xFF1D1B29),
                   elevation: 0,
-
                 ),
                 body: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -60,18 +62,61 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
 
                       // Фрейм для регулирования эквалайзера
                       Container(
-                        width: 350,
+                        width: 410,
                         height: 250,
                         decoration: BoxDecoration(
-                          color: Color(0xFF1D1B29),
+                          color: const Color(0xFF1D1B29),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _levels.length,
-                          itemBuilder: (context, index) {
-                            return _buildEqualizerSlider(index);
-                          },
+                        child: Row(
+                          children: [
+                            // Столбец с текстом "12 dB", "0 dB", "-12 dB"
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
+                                SizedBox(height: 8), // Отступ сверху
+                                Text(
+                                  '12 dB',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.normal,
+                                    fontFamily: 'OpenSans',
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  '0 dB',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.normal,
+                                    fontFamily: 'OpenSans',
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  '-12 dB',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.normal,
+                                    fontFamily: 'OpenSans',
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(height: 8), // Отступ снизу
+                              ],
+                            ),
+                            const SizedBox(width: 8),
+                            // Остальные столбцы с ползунками и цифрами
+                            Expanded(
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: _levels.length,
+                                itemBuilder: (context, index) {
+                                  return _buildEqualizerSliderWithLabel(index);
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -221,31 +266,77 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
     );
   }
 
-  // Виджет для отображения ползунка эквалайзера
-  Widget _buildEqualizerSlider(int index) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8), // Расстояние между линиями 8 пикселей
-      child: Container(
-        width: 19,
-        child: RotatedBox(
-          quarterTurns: 3, // Поворачиваем ползунок на 90 градусов
-          child: Slider(
-            value: _levels[index],
-            min: -12,
-            max: 12,
-            onChanged: (value) {
-              setState(() {
-                _levels[index] = value; // Обновляем уровень
-              });
-            },
-            activeColor: Colors.white, // Белый цвет ползунка
-            inactiveColor: Colors.white.withOpacity(0.1),
-            thumbColor: Colors.white, // Белый цвет бегунка
-            overlayColor: MaterialStateProperty.all(Colors.white.withOpacity(0.1)),
+  // Виджет для отображения ползунка эквалайзера с текстовой меткой
+  Widget _buildEqualizerSliderWithLabel(int index) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        // Ползунок
+        Padding(
+          padding: const EdgeInsets.only(right: 8), // Расстояние между линиями 8 пикселей
+          child: Container(
+            width: 20,
+            height: 220,
+            child: RotatedBox(
+              quarterTurns: 3, // Поворачиваем ползунок на 90 градусов
+              child: Slider(
+                value: _levels[index],
+                min: -12,
+                max: 12,
+                onChanged: (value) {
+                  setState(() {
+                    _levels[index] = value; // Обновляем уровень
+                  });
+                },
+                activeColor: Colors.white, // Белый цвет ползунка
+                inactiveColor: Colors.white.withOpacity(0.1),
+                thumbColor: Colors.white, // Цвет триггера #999595
+                overlayColor: MaterialStateProperty.all(Color(0xFF5F20DD).withOpacity(0.1)),
+              ),
+            ),
           ),
         ),
-      ),
+        // Текст под ползунком
+        Text(
+          index == 0 ? 'уровень' : _getFrequencyLabel(index),
+          style: const TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.normal,
+            fontFamily: 'OpenSans',
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 8),
+      ],
     );
+  }
+
+  // Метод для получения текстовой метки частоты
+  String _getFrequencyLabel(int index) {
+    switch (index) {
+      case 1:
+        return '60';
+      case 2:
+        return '170';
+      case 3:
+        return '310';
+      case 4:
+        return '600';
+      case 5:
+        return '1k';
+      case 6:
+        return '3k';
+      case 7:
+        return '6k';
+      case 8:
+        return '12k';
+      case 9:
+        return '14k';
+      case 10:
+        return '16k';
+      default:
+        return '';
+    }
   }
 
   // Виджет для отображения секции настроек
