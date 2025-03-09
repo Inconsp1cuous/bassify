@@ -81,36 +81,8 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Секция "По умолчанию"
-                      const Text(
-                        'По умолчанию',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'OpenSans',
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildSettingChip('Рок'),
-                      _buildSettingChip('Техно'),
-                      _buildSettingChip('Классическая'),
-                      const SizedBox(height: 24),
-
-                      // Секция "Своя настройка"
-                      const Text(
-                        'Своя настройка',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'OpenSans',
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildSettingChip('Поп'),
-                      _buildSettingChip('Вечеринка'),
-                      _buildSettingChip('Софт-рок'),
+                      // Секция настроек
+                      _buildSettingsSection(),
                       const SizedBox(height: 24),
 
                       // Секция "Bass Boost"
@@ -257,8 +229,10 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                   _levels[index] = value; // Обновляем уровень
                 });
               },
-              activeColor: const Color(0xFF6200EE),
+              activeColor: Colors.white, // Белый цвет ползунка
               inactiveColor: Colors.white.withOpacity(0.1),
+              thumbColor: Colors.white, // Белый цвет бегунка
+              overlayColor: MaterialStateProperty.all(Colors.white.withOpacity(0.1)),
             ),
           ),
           const SizedBox(height: 8),
@@ -272,36 +246,80 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
               color: Colors.white,
             ),
           ),
+          // Уровень в децибелах
+          Text(
+            '${_levels[index].round()}dB',
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              fontFamily: 'OpenSans',
+              color: Colors.white,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  // Виджет для отображения настроек (чипсы)
-  Widget _buildSettingChip(String label) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: ChoiceChip(
-        label: Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+  // Виджет для отображения секции настроек
+  Widget _buildSettingsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Секция "По умолчанию" и "Своя настройка"
+        const Text(
+          'Настройки',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
             fontFamily: 'OpenSans',
             color: Colors.white,
           ),
         ),
-        selected: _selectedSetting == label,
-        onSelected: (bool selected) {
-          setState(() {
-            _selectedSetting = label;
-          });
-        },
-        backgroundColor: Colors.white.withOpacity(0.1),
-        selectedColor: const Color(0xFF6200EE),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+        const SizedBox(height: 8),
+        // Кнопки настроек в два столбика
+        GridView.count(
+          crossAxisCount: 2, // Два столбика
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(), // Отключаем скролл
+          childAspectRatio: 3, // Соотношение сторон кнопок
+          children: [
+            _buildSettingChip('По умолчанию'),
+            _buildSettingChip('Своя настройка'),
+            _buildSettingChip('Рок'),
+            _buildSettingChip('Поп'),
+            _buildSettingChip('Техно'),
+            _buildSettingChip('Вечеринка'),
+            _buildSettingChip('Классическая'),
+            _buildSettingChip('Софт-рок'),
+          ],
         ),
+      ],
+    );
+  }
+
+  // Виджет для отображения настроек (чипсы)
+  Widget _buildSettingChip(String label) {
+    return ChoiceChip(
+      label: Text(
+        label,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          fontFamily: 'OpenSans',
+          color: _selectedSetting == label ? Colors.white : Colors.white.withOpacity(0.7),
+        ),
+      ),
+      selected: _selectedSetting == label,
+      onSelected: (bool selected) {
+        setState(() {
+          _selectedSetting = label;
+        });
+      },
+      backgroundColor: const Color(0xFF100E1C), // Цвет кнопок #100E1C
+      selectedColor: const Color(0xFF6200EE), // Фиолетовый цвет для выбранной кнопки
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
     );
   }
@@ -326,6 +344,10 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.white.withOpacity(0.1),
+          border: Border.all(
+            color: const Color(0xFF6200EE), // Фиолетовая обводка
+            width: 2,
+          ),
         ),
         child: Center(
           child: Transform.rotate(
