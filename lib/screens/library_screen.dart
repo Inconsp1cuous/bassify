@@ -1,12 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:Bassify/screens/home_screen.dart'; // Импортируем HomeScreen
+import 'package:Bassify/screens/equalizer_screen.dart'; // Импортируем EqualizerScreen
 
-class LibraryScreen extends StatelessWidget {
+class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
+
+  @override
+  _LibraryScreenState createState() => _LibraryScreenState();
+}
+
+class _LibraryScreenState extends State<LibraryScreen> {
+  int _selectedIndex = 2; // Индекс выбранной страницы (LibraryScreen)
+
+  // Метод для обработки нажатий на BottomNavigationBar
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    // Навигация на соответствующую страницу
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+        break;
+      case 1:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const EqualizerScreen()),
+        );
+        break;
+      case 2:
+        // Уже на LibraryScreen, ничего не делаем
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1D1B29),
+      backgroundColor: const Color(0xFF1D1B29),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
@@ -16,7 +51,7 @@ class LibraryScreen extends StatelessWidget {
               // Заголовок и кнопка поиска
               Row(
                 children: [
-                  Text(
+                  const Text(
                     'Ваша музыка',
                     style: TextStyle(
                       fontSize: 28,
@@ -24,16 +59,16 @@ class LibraryScreen extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   IconButton(
-                    icon: Icon(Icons.search, size: 50, color: Colors.white),
+                    icon: const Icon(Icons.search, size: 50, color: Colors.white),
                     onPressed: () {
                       print("Нажата кнопка поиска");
                     },
                   ),
                 ],
               ),
-              SizedBox(height: 16), // Отступ перед списком песен
+              const SizedBox(height: 16), // Отступ перед списком песен
               Expanded(
                 child: ListView(
                   children: [
@@ -58,6 +93,45 @@ class LibraryScreen extends StatelessWidget {
           ),
         ),
       ),
+      // Полупрозрачный BottomNavigationBar
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.5), // Полупрозрачный черный фон
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.transparent, // Прозрачный фон
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage('assets/images/home_icon.png'),
+                size: 24,
+                color: Colors.white, // Цвет иконки (непрозрачный)
+              ),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage('assets/images/equalizer_icon.png'),
+                size: 24,
+                color: Colors.white, // Цвет иконки (непрозрачный)
+              ),
+              label: 'Equalizer',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage('assets/images/library_icon.png'),
+                size: 24,
+                color: Color(0xFF6200EE), // Цвет иконки (непрозрачный)
+              ),
+              label: 'Library',
+            ),
+          ],
+          currentIndex: _selectedIndex, // Активная иконка
+          selectedItemColor: const Color(0xFF6200EE), // Цвет выбранной иконки (непрозрачный)
+          unselectedItemColor: Colors.white54, // Цвет невыбранной иконки (полупрозрачный)
+          onTap: _onItemTapped, // Обработка нажатий
+        ),
+      ),
     );
   }
 
@@ -70,7 +144,7 @@ class LibraryScreen extends StatelessWidget {
           Container(
             width: 60,
             height: 60,
-            margin: EdgeInsets.only(right: 16),
+            margin: const EdgeInsets.only(right: 16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
@@ -105,7 +179,7 @@ class LibraryScreen extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -114,7 +188,7 @@ class LibraryScreen extends StatelessWidget {
                 if (artist.isNotEmpty)
                   Text(
                     artist,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white70,
                       fontSize: 14,
                     ),
@@ -126,7 +200,7 @@ class LibraryScreen extends StatelessWidget {
           if (duration.isNotEmpty)
             Text(
               duration,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white70,
                 fontSize: 14,
               ),
