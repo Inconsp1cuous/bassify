@@ -34,3 +34,13 @@
 
 
 🎶 **Bassify – ваша музыка, ваше звучание!** 🎶  
+
+## 🖤 Галерея  🖤
+![1](images/Launch_screen.png)
+![2](images/Home_page.png)
+![3](images/Create_New_Playlist.png)
+![4](images/Playlist.png)
+![5](images/Equalizer.png)
+![6](images/Library.png)
+![7](images/Song.png)
+
