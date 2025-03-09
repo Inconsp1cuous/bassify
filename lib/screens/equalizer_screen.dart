@@ -1,7 +1,24 @@
+import 'package:Bassify/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
-class EqualizerScreen extends StatelessWidget {
+class EqualizerScreen extends StatefulWidget {
   const EqualizerScreen({Key? key}) : super(key: key);
+
+  @override
+  _EqualizerScreenState createState() => _EqualizerScreenState();
+}
+
+class _EqualizerScreenState extends State<EqualizerScreen> {
+  // Значения уровней для каждой частоты (в децибелах)
+  final List<double> _levels = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  final List<String> _frequencies = ['60', '170', '310', '600', '1k', '3k', '6k', '12k', '14k', '16k'];
+
+  // Значения для Bass Boost и 3D Effect
+  double _bassBoostValue = 38;
+  double _threeDEffectValue = 69;
+
+  // Выбранная настройка
+  String _selectedSetting = 'Рок';
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +39,7 @@ class EqualizerScreen extends StatelessWidget {
                 appBar: AppBar(
                   backgroundColor: const Color(0xFF1D1B29),
                   elevation: 0,
-                  leading: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
+                  // Убрана кнопка "Назад"
                 ),
                 body: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -46,7 +58,30 @@ class EqualizerScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
 
-                      // Секция "Полукомандир"
+                      // Регулируемые уровни эквалайзера
+                      const Text(
+                        'Уровень (дБ)',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'OpenSans',
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        height: 200, // Высота области с ползунками
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _frequencies.length,
+                          itemBuilder: (context, index) {
+                            return _buildEqualizerSlider(_frequencies[index], index);
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Секция "По умолчанию"
                       const Text(
                         'По умолчанию',
                         style: TextStyle(
@@ -62,7 +97,7 @@ class EqualizerScreen extends StatelessWidget {
                       _buildSettingChip('Классическая'),
                       const SizedBox(height: 24),
 
-                      // Секция "Свод настройка"
+                      // Секция "Своя настройка"
                       const Text(
                         'Своя настройка',
                         style: TextStyle(
@@ -78,9 +113,9 @@ class EqualizerScreen extends StatelessWidget {
                       _buildSettingChip('Софт-рок'),
                       const SizedBox(height: 24),
 
-                      // Секция "Ваза Boost"
+                      // Секция "Bass Boost"
                       const Text(
-                        'Ваss Boost 38%',
+                        'Bass Boost',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -89,21 +124,28 @@ class EqualizerScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Slider(
-                        value: 38,
-                        min: 0,
-                        max: 100,
+                      _buildRotatableCircle(
+                        value: _bassBoostValue,
                         onChanged: (value) {
-                          // Логика для изменения значения
+                          setState(() {
+                            _bassBoostValue = value;
+                          });
                         },
-                        activeColor: const Color(0xFF6200EE),
-                        inactiveColor: Colors.white.withOpacity(0.1),
+                      ),
+                      Text(
+                        '${_bassBoostValue.round()}%',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'OpenSans',
+                          color: Colors.white,
+                        ),
                       ),
                       const SizedBox(height: 24),
 
                       // Секция "3D Effect"
                       const Text(
-                        '3D Effect 69%',
+                        '3D Effect',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -112,15 +154,22 @@ class EqualizerScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Slider(
-                        value: 69,
-                        min: 0,
-                        max: 100,
+                      _buildRotatableCircle(
+                        value: _threeDEffectValue,
                         onChanged: (value) {
-                          // Логика для изменения значения
+                          setState(() {
+                            _threeDEffectValue = value;
+                          });
                         },
-                        activeColor: const Color(0xFF6200EE),
-                        inactiveColor: Colors.white.withOpacity(0.1),
+                      ),
+                      Text(
+                        '${_threeDEffectValue.round()}%',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'OpenSans',
+                          color: Colors.white,
+                        ),
                       ),
                       const SizedBox(height: 24),
                     ],
@@ -169,6 +218,15 @@ class EqualizerScreen extends StatelessWidget {
                     selectedItemColor: const Color(0xFF6200EE), // Цвет выбранной иконки (непрозрачный)
                     unselectedItemColor: Colors.white54, // Цвет невыбранной иконки (полупрозрачный)
                     onTap: (index) {
+                      // Действие при нажатии на элемент навигации
+                      if (index == 0) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const HomeScreen()),
+                        );
+                      } else if (index == 2) {
+                        // Переход на страницу библиотеки
+                      }
                     },
                   ),
                 ),
@@ -176,6 +234,45 @@ class EqualizerScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  // Виджет для отображения ползунка эквалайзера
+  Widget _buildEqualizerSlider(String frequency, int index) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          // Ползунок
+          RotatedBox(
+            quarterTurns: 3, // Поворачиваем ползунок на 90 градусов
+            child: Slider(
+              value: _levels[index],
+              min: -12,
+              max: 12,
+              onChanged: (value) {
+                setState(() {
+                  _levels[index] = value; // Обновляем уровень
+                });
+              },
+              activeColor: const Color(0xFF6200EE),
+              inactiveColor: Colors.white.withOpacity(0.1),
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Частота
+          Text(
+            frequency,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              fontFamily: 'OpenSans',
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -194,14 +291,51 @@ class EqualizerScreen extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        selected: false,
+        selected: _selectedSetting == label,
         onSelected: (bool selected) {
-          // Логика для выбора настройки
+          setState(() {
+            _selectedSetting = label;
+          });
         },
         backgroundColor: Colors.white.withOpacity(0.1),
         selectedColor: const Color(0xFF6200EE),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+    );
+  }
+
+  // Виджет для отображения вращающегося круга
+  Widget _buildRotatableCircle({
+    required double value,
+    required Function(double) onChanged,
+  }) {
+    return GestureDetector(
+      onPanUpdate: (details) {
+        setState(() {
+          double newValue = value + details.delta.dy;
+          if (newValue < 0) newValue = 0;
+          if (newValue > 100) newValue = 100;
+          onChanged(newValue);
+        });
+      },
+      child: Container(
+        width: 100,
+        height: 100,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withOpacity(0.1),
+        ),
+        child: Center(
+          child: Transform.rotate(
+            angle: value * 0.01 * 2 * 3.14159,
+            child: Icon(
+              Icons.arrow_upward,
+              size: 40,
+              color: Colors.white,
+            ),
+          ),
         ),
       ),
     );
