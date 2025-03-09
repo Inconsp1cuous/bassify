@@ -1,4 +1,5 @@
 import 'package:Bassify/screens/home_screen.dart';
+import 'package:Bassify/screens/library_screen.dart'; // Импортируем LibraryScreen
 import 'package:flutter/material.dart';
 
 class EqualizerScreen extends StatefulWidget {
@@ -10,12 +11,11 @@ class EqualizerScreen extends StatefulWidget {
 
 class _EqualizerScreenState extends State<EqualizerScreen> {
   // Значения уровней для каждой частоты (в децибелах)
-  final List<double> _levels = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  final List<String> _frequencies = ['60', '170', '310', '600', '1k', '3k', '6k', '12k', '14k', '16k'];
+  final List<double> _levels = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
   // Значения для Bass Boost и 3D Effect
-  double _bassBoostValue = 38;
-  double _threeDEffectValue = 69;
+  double _bassBoostValue = 0;
+  double _threeDEffectValue = 0;
 
   // Выбранная настройка
   String _selectedSetting = 'Рок';
@@ -39,7 +39,7 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                 appBar: AppBar(
                   backgroundColor: const Color(0xFF1D1B29),
                   elevation: 0,
-                  // Убрана кнопка "Назад"
+
                 ),
                 body: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -58,24 +58,19 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Регулируемые уровни эквалайзера
-                      const Text(
-                        'Уровень (дБ)',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'OpenSans',
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
+                      // Фрейм для регулирования эквалайзера
                       Container(
-                        height: 200, // Высота области с ползунками
+                        width: 350,
+                        height: 250,
+                        decoration: BoxDecoration(
+                          color: Color(0xFF1D1B29),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          itemCount: _frequencies.length,
+                          itemCount: _levels.length,
                           itemBuilder: (context, index) {
-                            return _buildEqualizerSlider(_frequencies[index], index);
+                            return _buildEqualizerSlider(index);
                           },
                         ),
                       ),
@@ -85,63 +80,75 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                       _buildSettingsSection(),
                       const SizedBox(height: 24),
 
-                      // Секция "Bass Boost"
-                      const Text(
-                        'Bass Boost',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'OpenSans',
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildRotatableCircle(
-                        value: _bassBoostValue,
-                        onChanged: (value) {
-                          setState(() {
-                            _bassBoostValue = value;
-                          });
-                        },
-                      ),
-                      Text(
-                        '${_bassBoostValue.round()}%',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'OpenSans',
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Секция "3D Effect"
-                      const Text(
-                        '3D Effect',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'OpenSans',
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildRotatableCircle(
-                        value: _threeDEffectValue,
-                        onChanged: (value) {
-                          setState(() {
-                            _threeDEffectValue = value;
-                          });
-                        },
-                      ),
-                      Text(
-                        '${_threeDEffectValue.round()}%',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'OpenSans',
-                          color: Colors.white,
-                        ),
+                      // Секция "Bass Boost" и "3D Effect" в одной строке
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          // Bass Boost
+                          Column(
+                            children: [
+                              _buildRotatableCircle(
+                                value: _bassBoostValue,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _bassBoostValue = value;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Bass Boost',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal, // Regular шрифт
+                                  fontFamily: 'OpenSans',
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                '${_bassBoostValue.round()}%',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal, // Regular шрифт
+                                  fontFamily: 'OpenSans',
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          // 3D Effect
+                          Column(
+                            children: [
+                              _buildRotatableCircle(
+                                value: _threeDEffectValue,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _threeDEffectValue = value;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                '3D Effect',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal, // Regular шрифт
+                                  fontFamily: 'OpenSans',
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                '${_threeDEffectValue.round()}%',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal, // Regular шрифт
+                                  fontFamily: 'OpenSans',
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 24),
                     ],
@@ -198,6 +205,10 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                         );
                       } else if (index == 2) {
                         // Переход на страницу библиотеки
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LibraryScreen()),
+                        );
                       }
                     },
                   ),
@@ -211,52 +222,28 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
   }
 
   // Виджет для отображения ползунка эквалайзера
-  Widget _buildEqualizerSlider(String frequency, int index) {
+  Widget _buildEqualizerSlider(int index) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          // Ползунок
-          RotatedBox(
-            quarterTurns: 3, // Поворачиваем ползунок на 90 градусов
-            child: Slider(
-              value: _levels[index],
-              min: -12,
-              max: 12,
-              onChanged: (value) {
-                setState(() {
-                  _levels[index] = value; // Обновляем уровень
-                });
-              },
-              activeColor: Colors.white, // Белый цвет ползунка
-              inactiveColor: Colors.white.withOpacity(0.1),
-              thumbColor: Colors.white, // Белый цвет бегунка
-              overlayColor: MaterialStateProperty.all(Colors.white.withOpacity(0.1)),
-            ),
+      padding: const EdgeInsets.only(right: 8), // Расстояние между линиями 8 пикселей
+      child: Container(
+        width: 19,
+        child: RotatedBox(
+          quarterTurns: 3, // Поворачиваем ползунок на 90 градусов
+          child: Slider(
+            value: _levels[index],
+            min: -12,
+            max: 12,
+            onChanged: (value) {
+              setState(() {
+                _levels[index] = value; // Обновляем уровень
+              });
+            },
+            activeColor: Colors.white, // Белый цвет ползунка
+            inactiveColor: Colors.white.withOpacity(0.1),
+            thumbColor: Colors.white, // Белый цвет бегунка
+            overlayColor: MaterialStateProperty.all(Colors.white.withOpacity(0.1)),
           ),
-          const SizedBox(height: 8),
-          // Частота
-          Text(
-            frequency,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'OpenSans',
-              color: Colors.white,
-            ),
-          ),
-          // Уровень в децибелах
-          Text(
-            '${_levels[index].round()}dB',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'OpenSans',
-              color: Colors.white,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -266,60 +253,56 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Секция "По умолчанию" и "Своя настройка"
-        const Text(
-          'Настройки',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'OpenSans',
-            color: Colors.white,
-          ),
-        ),
         const SizedBox(height: 8),
         // Кнопки настроек в два столбика
         GridView.count(
           crossAxisCount: 2, // Два столбика
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(), // Отключаем скролл
-          childAspectRatio: 3, // Соотношение сторон кнопок
+          crossAxisSpacing: 30, // Расстояние между столбиками 30 пикселей
+          mainAxisSpacing: 10, // Расстояние между строками 10 пикселей
+          childAspectRatio: 4, // Соотношение сторон кнопок
           children: [
-            _buildSettingChip('По умолчанию'),
-            _buildSettingChip('Своя настройка'),
-            _buildSettingChip('Рок'),
-            _buildSettingChip('Поп'),
-            _buildSettingChip('Техно'),
-            _buildSettingChip('Вечеринка'),
-            _buildSettingChip('Классическая'),
-            _buildSettingChip('Софт-рок'),
+            _buildSettingButton('По умолчанию'),
+            _buildSettingButton('Своя настройка'),
+            _buildSettingButton('Рок'),
+            _buildSettingButton('Поп'),
+            _buildSettingButton('Техно'),
+            _buildSettingButton('Вечеринка'),
+            _buildSettingButton('Классическая'),
+            _buildSettingButton('Софт-рок'),
           ],
         ),
       ],
     );
   }
 
-  // Виджет для отображения настроек (чипсы)
-  Widget _buildSettingChip(String label) {
-    return ChoiceChip(
-      label: Text(
-        label,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          fontFamily: 'OpenSans',
-          color: _selectedSetting == label ? Colors.white : Colors.white.withOpacity(0.7),
+  // Виджет для отображения настроек (кнопки)
+  Widget _buildSettingButton(String label) {
+    return SizedBox(
+      width: 120, // Фиксированная ширина кнопок
+      height: 30, // Фиксированная высота кнопок
+      child: ElevatedButton(
+        onPressed: () {
+          setState(() {
+            _selectedSetting = label;
+          });
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: _selectedSetting == label ? const Color(0xFF6200EE) : const Color(0xFF100E1C),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20), // Без обводки
+          ),
         ),
-      ),
-      selected: _selectedSetting == label,
-      onSelected: (bool selected) {
-        setState(() {
-          _selectedSetting = label;
-        });
-      },
-      backgroundColor: const Color(0xFF100E1C), // Цвет кнопок #100E1C
-      selectedColor: const Color(0xFF6200EE), // Фиолетовый цвет для выбранной кнопки
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            fontFamily: 'OpenSans',
+            color: _selectedSetting == label ? Colors.white : Colors.white.withOpacity(0.7),
+          ),
+        ),
       ),
     );
   }
@@ -339,23 +322,32 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
         });
       },
       child: Container(
-        width: 100,
-        height: 100,
+        width: 150, // Размер круга 100x100
+        height: 150,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white, // Белый фон круга
           border: Border.all(
             color: const Color(0xFF6200EE), // Фиолетовая обводка
             width: 2,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF6200EE).withOpacity(0.5),
+              spreadRadius: value * 0.01, // Фиолетовое свечение
+              blurRadius: 10,
+              offset: const Offset(0, 0),
+            ),
+          ],
         ),
         child: Center(
           child: Transform.rotate(
             angle: value * 0.01 * 2 * 3.14159,
-            child: Icon(
-              Icons.arrow_upward,
-              size: 40,
-              color: Colors.white,
+            child: Container(
+              width: 2,
+              height: 10,
+              margin: const EdgeInsets.only(bottom: 130), // Линия ближе к краю круга
+              color: const Color(0xFF6200EE), // Фиолетовая линия вместо стрелки
             ),
           ),
         ),
