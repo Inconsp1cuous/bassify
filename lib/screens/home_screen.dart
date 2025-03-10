@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart';
 import 'package:Bassify/widget/recent_track_item.dart';
 import 'package:Bassify/widget/playlist_button.dart';
-import 'package:Bassify/screens/equalizer_screen.dart'; // Импортируем EqualizerScreen
-import 'package:Bassify/screens/library_screen.dart'; // Импортируем LibraryScreen
-import 'package:Bassify/screens/song_screen.dart'; // Импортируем SongPage
-import 'package:Bassify/screens/playlist_screen.dart'; // Импортируем PlaylistScreen
+import 'package:Bassify/screens/equalizer_screen.dart';
+import 'package:Bassify/screens/library_screen.dart';
+import 'package:Bassify/screens/song_screen.dart';
+import 'package:Bassify/screens/playlist_screen.dart';
+import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,7 +18,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0; // Индекс выбранной страницы
+  int _selectedIndex = 0;
   List<Map<String, dynamic>> playlists = [
     {
       'text': 'Любимая',
@@ -53,17 +57,48 @@ class _HomeScreenState extends State<HomeScreen> {
     },
   ];
 
-  // Метод для обработки нажатий на BottomNavigationBar
+  List<Map<String, String>> recentTracks = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMp3Files();
+  }
+
+  Future<void> _loadMp3Files() async {
+    try {
+      // Загружаем AssetManifest.json
+      final manifestContent = await rootBundle.loadString('AssetManifest.json');
+      final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+
+      // Фильтруем только MP3-файлы в assets/images/
+      final List<String> mp3Files = manifestMap.keys
+          .where((String key) =>
+              key.startsWith('assets/images/') && key.endsWith('.mp3'))
+          .toList();
+
+      setState(() {
+        recentTracks = mp3Files.map((file) {
+          String fileName = file.split('/').last;
+          return {
+            'title': fileName.replaceAll('.mp3', ''),
+            'artist': 'Unknown Artist',
+            'duration': '00:00',
+            'path': file,
+          };
+        }).toList();
+      });
+    } catch (e) {
+      print('Ошибка загрузки MP3-файлов: $e');
+    }
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
 
-    // Навигация на соответствующую страницу
     switch (index) {
-      case 0:
-        // Уже на HomeScreen, ничего не делаем
-        break;
       case 1:
         Navigator.pushReplacement(
           context,
@@ -81,7 +116,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Фиксированные размеры для имитации экрана телефона
     double phoneWidth = 412;
     double phoneHeight = 917;
 
@@ -98,14 +132,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 appBar: AppBar(
                   backgroundColor: const Color(0xFF1D1B29),
                   elevation: 0,
-                  // Убрана кнопка поиска
                 ),
                 body: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Заголовок "Плейлисты"
                       const Text(
                         'Плейлисты',
                         style: TextStyle(
@@ -116,28 +149,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-
-                      // Поле поиска
                       Container(
-                        width: 350, // Фиксированная ширина
-                        height: 50, // Фиксированная высота
+                        width: 350,
+                        height: 50,
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20), // Закругленные углы
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         child: TextField(
                           decoration: InputDecoration(
                             hintText: 'Искать плейлист',
-                            hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                            prefixIcon: const Icon(Icons.search, color: Colors.white),
-                            border: InputBorder.none, // Убираем стандартную границу
-                            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16), // Отступы внутри поля
+                            hintStyle:
+                                TextStyle(color: Colors.white.withOpacity(0.5)),
+                            prefixIcon:
+                                const Icon(Icons.search, color: Colors.white),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 16),
                           ),
                         ),
                       ),
                       const SizedBox(height: 24),
-
-                      // Контейнер для плейлистов
                       Container(
                         width: 350,
                         decoration: BoxDecoration(
@@ -158,14 +190,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color2: playlist['color2'],
                                   icon: playlist['icon'],
                                   onPressed: () {
-                                    // Переход на PlaylistScreen с передачей данных
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => PlaylistScreen(
                                           playlistName: playlist['text'],
                                           imageUrl: playlist['imageUrl'],
-                                          icon: playlist['icon'], // Передаем иконку
+                                          icon: playlist['icon'],
                                         ),
                                       ),
                                     );
@@ -173,23 +204,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                   size: 100,
                                   imageUrl: playlist['imageUrl'],
                                 ),
-                              // Кнопка для добавления нового плейлиста
-                              PlaylistButton(
-                                text: 'Добавить',
-                                color1: Colors.grey,
-                                color2: Colors.grey,
-                                icon: Icons.add,
-                                onPressed: _addNewPlaylist,
-                                size: 100,
-                                imageUrl: null,
-                              ),
                             ],
                           ),
                         ),
                       ),
                       const SizedBox(height: 24),
-
-                      // Заголовок "Недавние треки"
                       const Text(
                         'Недавние треки',
                         style: TextStyle(
@@ -200,8 +219,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-
-                      // Контейнер для списка треков
                       Container(
                         width: 350,
                         height: 340,
@@ -209,124 +226,53 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: const Color(0xFF1D1B29),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: ListView(
-                          padding: const EdgeInsets.all(0),
-                          children: [
-                            RecentTrackItem(
-                              title: 'Swim',
-                              artist: 'Chase Atlantic',
-                              duration: '03:57',
+                        child: ListView.builder(
+                          itemCount: recentTracks.length,
+                          itemBuilder: (context, index) {
+                            final track = recentTracks[index];
+                            return RecentTrackItem(
+                              title: track['title']!,
+                              artist: track['artist']!,
+                              duration: track['duration']!,
                               onPressed: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => SongPage(
-                                      songTitle: 'Swim',
-                                      artist: 'Chase Atlantic',
-                                      imageUrl: 'assets/images/swim_image.png',
-                                      duration: const Duration(minutes: 3, seconds: 57),
+                                      songTitle: track['title']!,
+                                      artist: track['artist']!,
+                                      imageUrl:
+                                          'assets/images/default_song_image.png',
+                                      duration: const Duration(
+                                          minutes: 3, seconds: 30),
                                     ),
                                   ),
                                 );
                               },
-                            ),
-                            RecentTrackItem(
-                              title: 'Time',
-                              artist: 'NF',
-                              duration: '02:13',
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SongPage(
-                                      songTitle: 'Time',
-                                      artist: 'NF',
-                                      imageUrl: 'assets/images/time_image.png',
-                                      duration: const Duration(minutes: 2, seconds: 13),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            RecentTrackItem(
-                              title: 'Movies',
-                              artist: 'Conan Gray',
-                              duration: '03:10',
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SongPage(
-                                      songTitle: 'Movies',
-                                      artist: 'Conan Gray',
-                                      imageUrl: 'assets/images/movies_image.png',
-                                      duration: const Duration(minutes: 3, seconds: 10),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            RecentTrackItem(
-                              title: 'Lowkey',
-                              artist: 'NIKI',
-                              duration: '03:00',
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SongPage(
-                                      songTitle: 'Lowkey',
-                                      artist: 'NIKI',
-                                      imageUrl: 'assets/images/lowkey_image.png',
-                                      duration: const Duration(minutes: 3, seconds: 0),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            RecentTrackItem(
-                              title: 'Hurt',
-                              artist: 'NewJeans',
-                              duration: '02:18',
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SongPage(
-                                      songTitle: 'Hurt',
-                                      artist: 'NewJeans',
-                                      imageUrl: 'assets/images/hurt_image.png',
-                                      duration: const Duration(minutes: 2, seconds: 18),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
+                            );
+                          },
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-
-              // Полупрозрачный BottomNavigationBar
               Positioned(
                 bottom: 0,
                 left: 0,
                 right: 0,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5), // Полупрозрачный черный фон
+                    color: Colors.black.withOpacity(0.5),
                   ),
                   child: BottomNavigationBar(
-                    backgroundColor: Colors.transparent, // Прозрачный фон
+                    backgroundColor: Colors.transparent,
                     items: const <BottomNavigationBarItem>[
                       BottomNavigationBarItem(
                         icon: ImageIcon(
                           AssetImage('assets/images/home_icon.png'),
                           size: 24,
-                          color: Color(0xFF6200EE), // Цвет иконки (непрозрачный)
+                          color: Color(0xFF6200EE),
                         ),
                         label: 'Home',
                       ),
@@ -334,7 +280,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: ImageIcon(
                           AssetImage('assets/images/equalizer_icon.png'),
                           size: 24,
-                          color: Colors.white, // Цвет иконки (непрозрачный)
+                          color: Colors.white,
                         ),
                         label: 'Equalizer',
                       ),
@@ -342,15 +288,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: ImageIcon(
                           AssetImage('assets/images/library_icon.png'),
                           size: 24,
-                          color: Colors.white, // Цвет иконки (непрозрачный)
+                          color: Colors.white,
                         ),
                         label: 'Library',
                       ),
                     ],
-                    currentIndex: _selectedIndex, // Активная иконка
-                    selectedItemColor: const Color(0xFF6200EE), // Цвет выбранной иконки (непрозрачный)
-                    unselectedItemColor: Colors.white54, // Цвет невыбранной иконки (полупрозрачный)
-                    onTap: _onItemTapped, // Обработка нажатий
+                    currentIndex: _selectedIndex,
+                    selectedItemColor: const Color(0xFF6200EE),
+                    unselectedItemColor: Colors.white54,
+                    onTap: _onItemTapped,
                   ),
                 ),
               ),
@@ -377,7 +323,8 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisSize: MainAxisSize.min, // Минимальный размер по высоте
-              crossAxisAlignment: CrossAxisAlignment.center, // Центрирование по горизонтали
+              crossAxisAlignment:
+                  CrossAxisAlignment.center, // Центрирование по горизонтали
               children: [
                 // Поле для загрузки изображения (по центру)
                 GestureDetector(
@@ -429,7 +376,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     fillColor: Colors.transparent, // Прозрачный фон
                     border: InputBorder.none, // Убираем границу
                     contentPadding: const EdgeInsets.symmetric(
-                      vertical: 12, horizontal: 16),
+                        vertical: 12, horizontal: 16),
                   ),
                   style: const TextStyle(color: Colors.white),
                   textAlign: TextAlign.center, // Текст по центру
@@ -477,12 +424,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6200EE), // Фиолетовый цвет кнопки
+                        backgroundColor:
+                            const Color(0xFF6200EE), // Фиолетовый цвет кнопки
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50), // Закругление углов 50
+                          borderRadius:
+                              BorderRadius.circular(50), // Закругление углов 50
                         ),
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
+                            horizontal: 24, vertical: 12),
                       ),
                       child: const Text(
                         'Создать',
