@@ -22,9 +22,9 @@ class RecentTrackItem extends StatelessWidget {
       onTap: onPressed, // Обработчик нажатия
       child: Container(
         margin: const EdgeInsets.only(bottom: 8), // Отступ снизу
-        padding: const EdgeInsets.all(16), // Внутренние отступы
+        padding: const EdgeInsets.all(8), // Внутренние отступы
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1), // Цвет фона
+          color: const Color(0xFF1D1B29), // Цвет фона
           borderRadius: BorderRadius.circular(12), // Закругленные углы
         ),
         child: Row(

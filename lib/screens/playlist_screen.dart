@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:Bassify/screens/home_screen.dart'; // Импортируем HomeScreen
 import 'package:Bassify/screens/equalizer_screen.dart'; // Импортируем EqualizerScreen
 import 'package:Bassify/screens/library_screen.dart'; // Импортируем LibraryScreen
+import 'package:Bassify/screens/song_screen.dart'; // Импортируем SongPage
 
 class PlaylistScreen extends StatelessWidget {
   final String playlistName; // Название плейлиста
@@ -79,14 +80,14 @@ class PlaylistScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      _buildSong('Coffe', 'Kainbeats', '01:44', 'assets/images/song1.png'),
-                      _buildSong('raindrops', 'rainyyxx', '02:03', 'assets/images/song2.png'),
-                      _buildSong('Tokyo', 'SmYang', '01:40', 'assets/images/song3.png'),
-                      _buildSong('Lullaby', 'iamfinerow', '04:12', 'assets/images/song4.png'),
-                      _buildSong('Back To Her Men', 'Demien Rice', '03:07', 'assets/images/song5.png'),
-                      _buildSong('Hoting Bling', 'Bille Elish', '03:00', 'assets/images/song6.png'),
-                      _buildSong('Antretor', 'yann tiarsen', '02:10', 'assets/images/song7.png'),
-                      _buildSong('Nightmare', 'Halsey', '01:49', 'assets/images/song8.png'),
+                      _buildSong(context, 'Coffe', 'Kainbeats', '01:44', 'assets/images/song1.png'),
+                      _buildSong(context, 'raindrops', 'rainyyxx', '02:03', 'assets/images/song2.png'),
+                      _buildSong(context, 'Tokyo', 'SmYang', '01:40', 'assets/images/song3.png'),
+                      _buildSong(context, 'Lullaby', 'iamfinerow', '04:12', 'assets/images/song4.png'),
+                      _buildSong(context, 'Back To Her Men', 'Demien Rice', '03:07', 'assets/images/song5.png'),
+                      _buildSong(context, 'Hoting Bling', 'Bille Elish', '03:00', 'assets/images/song6.png'),
+                      _buildSong(context, 'Antretor', 'yann tiarsen', '02:10', 'assets/images/song7.png'),
+                      _buildSong(context, 'Nightmare', 'Halsey', '01:49', 'assets/images/song8.png'),
                     ],
                   ),
                 ),
@@ -181,79 +182,103 @@ class PlaylistScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSong(String title, String artist, String duration, String imagePath) {
+  Widget _buildSong(BuildContext context, String title, String artist, String duration, String imagePath) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          // Обложка песни
-          Container(
-            width: 60,
-            height: 60,
-            margin: const EdgeInsets.only(right: 16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12), // Закруглённые углы
-              border: Border.all(
-                color: Colors.white.withOpacity(0.3), // Светлая рамка
-                width: 2,
+      child: InkWell(
+        onTap: () {
+          // Переход на SongPage с передачей данных
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SongPage(
+                songTitle: title,
+                artist: artist,
+                imageUrl: imagePath,
+                duration: _parseDuration(duration), // Вызываем метод _parseDuration
               ),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10), // Закруглённые углы внутри рамки
-              child: Image.asset(
-                imagePath,
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  // Запасное изображение, если основное не загрузилось
-                  return Container(
-                    color: Colors.grey.withOpacity(0.3), // Фон, если изображение отсутствует
-                    child: Icon(
-                      Icons.music_note,
-                      color: Colors.white.withOpacity(0.5),
-                      size: 30,
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-          // Название песни и исполнитель
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+          );
+        },
+        child: Row(
+          children: [
+            // Обложка песни
+            Container(
+              width: 60,
+              height: 60,
+              margin: const EdgeInsets.only(right: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12), // Закруглённые углы
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3), // Светлая рамка
+                  width: 2,
                 ),
-                if (artist.isNotEmpty)
-                  Text(
-                    artist,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          // Длительность песни
-          if (duration.isNotEmpty)
-            Text(
-              duration,
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10), // Закруглённые углы внутри рамки
+                child: Image.asset(
+                  imagePath,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    // Запасное изображение, если основное не загрузилось
+                    return Container(
+                      color: Colors.grey.withOpacity(0.3), // Фон, если изображение отсутствует
+                      child: Icon(
+                        Icons.music_note,
+                        color: Colors.white.withOpacity(0.5),
+                        size: 30,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-        ],
+            // Название песни и исполнитель
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (artist.isNotEmpty)
+                    Text(
+                      artist,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            // Длительность песни
+            if (duration.isNotEmpty)
+              Text(
+                duration,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                ),
+              ),
+          ],
+        ),
       ),
     );
+  }
+
+  // Метод для преобразования строки длительности в Duration
+  Duration _parseDuration(String duration) {
+    List<String> parts = duration.split(':');
+    int minutes = int.parse(parts[0]);
+    int seconds = int.parse(parts[1]);
+    return Duration(minutes: minutes, seconds: seconds);
   }
 }
