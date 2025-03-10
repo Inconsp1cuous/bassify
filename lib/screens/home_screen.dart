@@ -4,6 +4,7 @@ import 'package:Bassify/widget/playlist_button.dart';
 import 'package:Bassify/screens/equalizer_screen.dart'; // Импортируем EqualizerScreen
 import 'package:Bassify/screens/library_screen.dart'; // Импортируем LibraryScreen
 import 'package:Bassify/screens/song_screen.dart'; // Импортируем SongPage
+import 'package:Bassify/screens/playlist_screen.dart'; // Импортируем PlaylistScreen
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -156,7 +157,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color1: playlist['color1'],
                                   color2: playlist['color2'],
                                   icon: playlist['icon'],
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    // Переход на PlaylistScreen с передачей данных
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => PlaylistScreen(
+                                          playlistName: playlist['text'],
+                                          imageUrl: playlist['imageUrl'],
+                                          icon: playlist['icon'], // Передаем иконку
+                                        ),
+                                      ),
+                                    );
+                                  },
                                   size: 100,
                                   imageUrl: playlist['imageUrl'],
                                 ),
