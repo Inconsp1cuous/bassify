@@ -3,6 +3,7 @@ import 'package:Bassify/widget/recent_track_item.dart';
 import 'package:Bassify/widget/playlist_button.dart';
 import 'package:Bassify/screens/equalizer_screen.dart'; // Импортируем EqualizerScreen
 import 'package:Bassify/screens/library_screen.dart'; // Импортируем LibraryScreen
+import 'package:Bassify/screens/song_screen.dart'; // Импортируем SongPage
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,6 +14,43 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0; // Индекс выбранной страницы
+  List<Map<String, dynamic>> playlists = [
+    {
+      'text': 'Любимая',
+      'color1': Colors.deepPurple,
+      'color2': Colors.blueAccent,
+      'icon': Icons.favorite,
+      'imageUrl': null,
+    },
+    {
+      'text': 'Рок музыка',
+      'color1': Colors.redAccent,
+      'color2': Colors.orange,
+      'icon': Icons.music_note,
+      'imageUrl': null,
+    },
+    {
+      'text': 'Поп музыка',
+      'color1': Colors.pinkAccent,
+      'color2': Colors.purpleAccent,
+      'icon': Icons.music_note,
+      'imageUrl': null,
+    },
+    {
+      'text': 'В машину',
+      'color1': Colors.green,
+      'color2': Colors.teal,
+      'icon': Icons.drive_eta,
+      'imageUrl': null,
+    },
+    {
+      'text': 'Lo-fi Beats',
+      'color1': Colors.blueGrey,
+      'color2': Colors.cyan,
+      'icon': Icons.music_note,
+      'imageUrl': null,
+    },
+  ];
 
   // Метод для обработки нажатий на BottomNavigationBar
   void _onItemTapped(int index) {
@@ -78,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Поле поиска с закругленными углами
+                      // Поле поиска
                       Container(
                         width: 350, // Фиксированная ширина
                         height: 50, // Фиксированная высота
@@ -100,8 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       // Контейнер для плейлистов
                       Container(
-                        width: 350, // 85% от ширины экрана
-                        height: 230, // 30% от высоты экрана
+                        width: 350,
                         decoration: BoxDecoration(
                           color: const Color(0xFF1D1B29),
                           borderRadius: BorderRadius.circular(16),
@@ -113,51 +150,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             runSpacing: 12,
                             alignment: WrapAlignment.center,
                             children: [
-                              PlaylistButton(
-                                text: 'Любимая',
-                                color1: Colors.deepPurple,
-                                color2: Colors.blueAccent,
-                                icon: Icons.favorite,
-                                onPressed: () {},
-                                size: 100,
-                                imageUrl: null, // Нет фото, будет стандартный вид
-                              ),
-                              PlaylistButton(
-                                text: 'Рок музыка',
-                                color1: Colors.redAccent,
-                                color2: Colors.orange,
-                                icon: Icons.music_note,
-                                onPressed: () {},
-                                size: 100,
-                                imageUrl: null,
-                              ),
-                              PlaylistButton(
-                                text: 'Поп музыка',
-                                color1: Colors.pinkAccent,
-                                color2: Colors.purpleAccent,
-                                icon: Icons.music_note,
-                                onPressed: () {},
-                                size: 100,
-                                imageUrl: null, // Нет фото, будет стандартный вид
-                              ),
-                              PlaylistButton(
-                                text: 'В машину',
-                                color1: Colors.green,
-                                color2: Colors.teal,
-                                icon: Icons.drive_eta,
-                                onPressed: () {},
-                                size: 100,
-                                imageUrl: null, // Нет фото, будет стандартный вид
-                              ),
-                              PlaylistButton(
-                                text: 'Lo-fi Beats',
-                                color1: Colors.blueGrey,
-                                color2: Colors.cyan,
-                                icon: Icons.music_note,
-                                onPressed: () {},
-                                size: 100,
-                                imageUrl: null, // Нет фото, будет стандартный вид
-                              ),
+                              for (var playlist in playlists)
+                                PlaylistButton(
+                                  text: playlist['text'],
+                                  color1: playlist['color1'],
+                                  color2: playlist['color2'],
+                                  icon: playlist['icon'],
+                                  onPressed: () {},
+                                  size: 100,
+                                  imageUrl: playlist['imageUrl'],
+                                ),
                               // Кнопка для добавления нового плейлиста
                               PlaylistButton(
                                 text: 'Добавить',
@@ -172,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 65),
+                      const SizedBox(height: 24),
 
                       // Заголовок "Недавние треки"
                       const Text(
@@ -184,7 +186,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Color(0xFF999595),
                         ),
                       ),
-                      
                       const SizedBox(height: 16),
 
                       // Контейнер для списка треков
@@ -198,16 +199,96 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: ListView(
                           padding: const EdgeInsets.all(0),
                           children: [
-                            RecentTrackItem(title: 'Swim', artist: 'Chase Atlantic', duration: '03:57', onPressed: () {}),
-                            RecentTrackItem(title: 'Time', artist: 'NF', duration: '02:13', onPressed: () {}),
-                            RecentTrackItem(title: 'Movies', artist: 'Conan Gray', duration: '03:10', onPressed: () {}),
-                            RecentTrackItem(title: 'Lowkey', artist: 'NIKI', duration: '03:00', onPressed: () {}),
-                            RecentTrackItem(title: 'Hurt', artist: 'NewJeans', duration: '02:18', onPressed: () {}),
-                            RecentTrackItem(title: 'Swim', artist: 'Chase Atlantic', duration: '03:57', onPressed: () {}),
-                            RecentTrackItem(title: 'Time', artist: 'NF', duration: '02:13', onPressed: () {}),
-                            RecentTrackItem(title: 'Movies', artist: 'Conan Gray', duration: '03:10', onPressed: () {}),
-                            RecentTrackItem(title: 'Lowkey', artist: 'NIKI', duration: '03:00', onPressed: () {}),
-                            RecentTrackItem(title: 'Hurt', artist: 'NewJeans', duration: '02:18', onPressed: () {}),
+                            RecentTrackItem(
+                              title: 'Swim',
+                              artist: 'Chase Atlantic',
+                              duration: '03:57',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SongPage(
+                                      songTitle: 'Swim',
+                                      artist: 'Chase Atlantic',
+                                      imageUrl: 'assets/images/swim_image.png',
+                                      duration: const Duration(minutes: 3, seconds: 57),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            RecentTrackItem(
+                              title: 'Time',
+                              artist: 'NF',
+                              duration: '02:13',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SongPage(
+                                      songTitle: 'Time',
+                                      artist: 'NF',
+                                      imageUrl: 'assets/images/time_image.png',
+                                      duration: const Duration(minutes: 2, seconds: 13),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            RecentTrackItem(
+                              title: 'Movies',
+                              artist: 'Conan Gray',
+                              duration: '03:10',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SongPage(
+                                      songTitle: 'Movies',
+                                      artist: 'Conan Gray',
+                                      imageUrl: 'assets/images/movies_image.png',
+                                      duration: const Duration(minutes: 3, seconds: 10),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            RecentTrackItem(
+                              title: 'Lowkey',
+                              artist: 'NIKI',
+                              duration: '03:00',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SongPage(
+                                      songTitle: 'Lowkey',
+                                      artist: 'NIKI',
+                                      imageUrl: 'assets/images/lowkey_image.png',
+                                      duration: const Duration(minutes: 3, seconds: 0),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            RecentTrackItem(
+                              title: 'Hurt',
+                              artist: 'NewJeans',
+                              duration: '02:18',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SongPage(
+                                      songTitle: 'Hurt',
+                                      artist: 'NewJeans',
+                                      imageUrl: 'assets/images/hurt_image.png',
+                                      duration: const Duration(minutes: 2, seconds: 18),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ],
                         ),
                       ),
@@ -370,8 +451,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     ElevatedButton(
                       onPressed: () {
                         if (newPlaylistName.isNotEmpty) {
-                          // Логика для создания нового плейлиста
-                          print('Создан новый плейлист: $newPlaylistName');
+                          setState(() {
+                            playlists.add({
+                              'text': newPlaylistName,
+                              'color1': Colors.grey,
+                              'color2': Colors.grey,
+                              'icon': Icons.music_note,
+                              'imageUrl': null,
+                            });
+                          });
                           Navigator.of(context).pop();
                         }
                       },

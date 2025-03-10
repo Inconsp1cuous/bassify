@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:Bassify/screens/home_screen.dart'; // Импортируем HomeScreen
 import 'package:Bassify/screens/equalizer_screen.dart'; // Импортируем EqualizerScreen
+import 'package:Bassify/screens/song_screen.dart'; // Импортируем SongPage
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -135,78 +136,103 @@ class _LibraryScreenState extends State<LibraryScreen> {
     );
   }
 
+  // Метод для создания элемента списка песен
   Widget _buildSong(String title, String artist, String duration, String imagePath) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          // Обложка песни
-          Container(
-            width: 60,
-            height: 60,
-            margin: const EdgeInsets.only(right: 16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.3),
-                width: 2,
-              ),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                imagePath,
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Colors.grey.withOpacity(0.3),
-                    child: Icon(
-                      Icons.music_note,
-                      color: Colors.white.withOpacity(0.5),
-                      size: 30,
-                    ),
-                  );
-                },
-              ),
+    return GestureDetector(
+      onTap: () {
+        // Переход на SongPage с передачей данных
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SongPage(
+              songTitle: title,
+              artist: artist,
+              imageUrl: imagePath,
+              duration: _parseDuration(duration), // Преобразуем строку в Duration
             ),
           ),
-          // Название песни и исполнитель
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          children: [
+            // Обложка песни
+            Container(
+              width: 60,
+              height: 60,
+              margin: const EdgeInsets.only(right: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 2,
                 ),
-                if (artist.isNotEmpty)
-                  Text(
-                    artist,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          // Длительность песни
-          if (duration.isNotEmpty)
-            Text(
-              duration,
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  imagePath,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.grey.withOpacity(0.3),
+                      child: Icon(
+                        Icons.music_note,
+                        color: Colors.white.withOpacity(0.5),
+                        size: 30,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-        ],
+            // Название песни и исполнитель
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (artist.isNotEmpty)
+                    Text(
+                      artist,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            // Длительность песни
+            if (duration.isNotEmpty)
+              Text(
+                duration,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                ),
+              ),
+          ],
+        ),
       ),
     );
+  }
+
+  // Метод для преобразования строки в Duration
+  Duration _parseDuration(String duration) {
+    final parts = duration.split(':');
+    final minutes = int.parse(parts[0]);
+    final seconds = int.parse(parts[1]);
+    return Duration(minutes: minutes, seconds: seconds);
   }
 }

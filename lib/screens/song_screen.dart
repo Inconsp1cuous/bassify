@@ -1,7 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:Bassify/screens/home_screen.dart'; // Импортируем HomeScreen
+import 'package:Bassify/screens/equalizer_screen.dart'; // Импортируем EqualizerScreen
+import 'package:Bassify/screens/library_screen.dart'; // Импортируем LibraryScreen
 
 class SongPage extends StatefulWidget {
-  const SongPage({Key? key}) : super(key: key);
+  final String songTitle; // Название трека
+  final String artist; // Исполнитель
+  final String imageUrl; // URL изображения (если есть)
+  final Duration duration; // Длительность трека
+
+  const SongPage({
+    Key? key,
+    required this.songTitle,
+    required this.artist,
+    this.imageUrl = 'assets/images/song_image.png', // Дефолтное изображение
+    this.duration = const Duration(minutes: 3, seconds: 46), // Дефолтная длительность
+  }) : super(key: key);
 
   @override
   _SongPageState createState() => _SongPageState();
@@ -10,11 +24,9 @@ class SongPage extends StatefulWidget {
 class _SongPageState extends State<SongPage> {
   bool isPlaying = false;
   Duration currentPosition = const Duration(minutes: 1, seconds: 28); // Текущее время трека
-  Duration totalDuration = const Duration(minutes: 3, seconds: 46); // Общая продолжительность трека
-
-  // Состояния для кнопок "перемешать" и "повторить"
   bool isShuffleActive = false;
   bool isRepeatActive = false;
+  int _selectedIndex = 0; // Индекс выбранной страницы
 
   void togglePlayPause() {
     setState(() {
@@ -22,19 +34,46 @@ class _SongPageState extends State<SongPage> {
     });
   }
 
-  // Метод для обновления текущего времени (можно вызывать извне)
   void updateCurrentPosition(Duration newPosition) {
     setState(() {
       currentPosition = newPosition;
     });
   }
 
-  // Форматирование времени в строку (минуты:секунды)
   String formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final minutes = twoDigits(duration.inMinutes);
     final seconds = twoDigits(duration.inSeconds.remainder(60));
     return '$minutes:$seconds';
+  }
+
+  // Метод для обработки нажатий на BottomNavigationBar
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    // Навигация на соответствующую страницу
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+        break;
+      case 1:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const EqualizerScreen()),
+        );
+        break;
+      case 2:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LibraryScreen()),
+        );
+        break;
+    }
   }
 
   @override
@@ -68,7 +107,7 @@ class _SongPageState extends State<SongPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Область под картинку 350x350
+                      // Область под картинку
                       Center(
                         child: Container(
                           width: 360, // Ширина области
@@ -76,8 +115,8 @@ class _SongPageState extends State<SongPage> {
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.1), // Фон, если картинки нет
                             borderRadius: BorderRadius.circular(16), // Закругленные углы
-                            image: const DecorationImage(
-                              image: AssetImage('assets/images/song_image.png'), // Ваше изображение трека
+                            image: DecorationImage(
+                              image: AssetImage(widget.imageUrl), // Используем переданное изображение
                               fit: BoxFit.cover, // Изображение заполняет контейнер
                             ),
                           ),
@@ -93,9 +132,9 @@ class _SongPageState extends State<SongPage> {
                       const SizedBox(height: 24), // Отступ как на home_page
 
                       // Название трека и исполнитель
-                      const Text(
-                        'Coffee',
-                        style: TextStyle(
+                      Text(
+                        widget.songTitle, // Используем переданное название
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'OpenSans',
@@ -103,9 +142,9 @@ class _SongPageState extends State<SongPage> {
                         ),
                       ),
                       const SizedBox(height: 8), // Отступ
-                      const Text(
-                        'Kainbeats',
-                        style: TextStyle(
+                      Text(
+                        widget.artist, // Используем переданного исполнителя
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                           fontFamily: 'OpenSans',
@@ -116,7 +155,7 @@ class _SongPageState extends State<SongPage> {
 
                       // Линия прогресса
                       LinearProgressIndicator(
-                        value: currentPosition.inSeconds / totalDuration.inSeconds,
+                        value: currentPosition.inSeconds / widget.duration.inSeconds,
                         backgroundColor: Colors.white.withOpacity(0.1),
                         valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
@@ -136,7 +175,7 @@ class _SongPageState extends State<SongPage> {
                             ),
                           ),
                           Text(
-                            formatDuration(totalDuration), // Общая продолжительность
+                            formatDuration(widget.duration), // Используем переданную длительность
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -244,12 +283,10 @@ class _SongPageState extends State<SongPage> {
                         label: 'Library',
                       ),
                     ],
-                    currentIndex: 0,
+                    currentIndex: _selectedIndex, // Активная иконка
                     selectedItemColor: const Color(0xFF6200EE), // Цвет выбранной иконки (непрозрачный)
                     unselectedItemColor: Colors.white54, // Цвет невыбранной иконки (полупрозрачный)
-                    onTap: (index) {
-                      // Действие при нажатии на элемент навигации
-                    },
+                    onTap: _onItemTapped, // Обработка нажатий
                   ),
                 ),
               ),
