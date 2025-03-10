@@ -12,7 +12,7 @@ class SongPage extends StatefulWidget {
 
   const SongPage({
     Key? key,
-    required this.songTi  tle,
+    required this.songTitle,
     required this.artist,
     this.imageUrl = 'assets/images/song_image.png', // Дефолтное изображение
     this.duration =
