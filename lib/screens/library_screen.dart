@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:audioplayers/audioplayers.dart'; // Импорт пакета audioplayers
 import 'package:Bassify/screens/home_screen.dart';
 import 'package:Bassify/screens/equalizer_screen.dart';
 import 'package:Bassify/screens/song_screen.dart';
@@ -15,6 +16,7 @@ class LibraryScreen extends StatefulWidget {
 class _LibraryScreenState extends State<LibraryScreen> {
   int _selectedIndex = 2; // Индекс выбранной страницы (LibraryScreen)
   List<Map<String, String>> songs = []; // Список песен
+  final AudioPlayer audioPlayer = AudioPlayer(); // Аудиоплеер для извлечения длительности
 
   @override
   void initState() {
@@ -35,21 +37,43 @@ class _LibraryScreenState extends State<LibraryScreen> {
               key.startsWith('assets/images/') && key.endsWith('.mp3'))
           .toList();
 
+      // Загружаем длительность для каждого MP3-файла
+      List<Map<String, String>> tracks = [];
+      for (var file in mp3Files) {
+        final duration = await _getAudioDuration(file);
+        String fileName = file.split('/').last;
+        tracks.add({
+          'title': fileName.replaceAll('.mp3', ''),
+          'artist': 'Unknown Artist',
+          'duration': _formatDuration(duration), // Форматируем длительность
+          'path': file,
+          'imageUrl': 'assets/images/default_song_image.png', // Заглушка для изображения
+        });
+      }
+
       setState(() {
-        songs = mp3Files.map((file) {
-          String fileName = file.split('/').last;
-          return {
-            'title': fileName.replaceAll('.mp3', ''),
-            'artist': 'Unknown Artist',
-            'duration': '00:00',
-            'path': file,
-            'imageUrl': 'assets/images/default_song_image.png', // Заглушка для изображения
-          };
-        }).toList();
+        songs = tracks;
       });
     } catch (e) {
       print('Ошибка загрузки MP3-файлов: $e');
     }
+  }
+
+  // Метод для получения длительности аудио
+  Future<Duration> _getAudioDuration(String filePath) async {
+    final player = AudioPlayer();
+    await player.setSourceDeviceFile(filePath);
+    final duration = await player.getDuration() ?? Duration.zero;
+    await player.dispose(); // Освобождаем ресурсы
+    return duration;
+  }
+
+  // Форматирование Duration в строку (минуты:секунды)
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$minutes:$seconds';
   }
 
   // Метод для обработки нажатий на BottomNavigationBar
@@ -129,7 +153,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                               return _buildSong(
                                 song['title']!,
                                 song['artist']!,
-                                song['duration']!,
+                                song['duration']!, // Используем реальную длительность
                                 song['imageUrl']!,
                               );
                             },

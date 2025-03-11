@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:path_provider/path_provider.dart';
+import 'package:audioplayers/audioplayers.dart'; // Импорт пакета audioplayers
 import 'package:Bassify/widget/recent_track_item.dart';
 import 'package:Bassify/widget/playlist_button.dart';
 import 'package:Bassify/screens/equalizer_screen.dart';
@@ -58,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   List<Map<String, String>> recentTracks = [];
+  final AudioPlayer audioPlayer = AudioPlayer(); // Аудиоплеер для извлечения длительности
 
   @override
   void initState() {
@@ -77,20 +78,42 @@ class _HomeScreenState extends State<HomeScreen> {
               key.startsWith('assets/images/') && key.endsWith('.mp3'))
           .toList();
 
+      // Загружаем длительность для каждого MP3-файла
+      List<Map<String, String>> tracks = [];
+      for (var file in mp3Files) {
+        final duration = await _getAudioDuration(file);
+        String fileName = file.split('/').last;
+        tracks.add({
+          'title': fileName.replaceAll('.mp3', ''),
+          'artist': 'Unknown Artist',
+          'duration': _formatDuration(duration), // Форматируем длительность
+          'path': file,
+        });
+      }
+
       setState(() {
-        recentTracks = mp3Files.map((file) {
-          String fileName = file.split('/').last;
-          return {
-            'title': fileName.replaceAll('.mp3', ''),
-            'artist': 'Unknown Artist',
-            'duration': '00:00',
-            'path': file,
-          };
-        }).toList();
+        recentTracks = tracks;
       });
     } catch (e) {
       print('Ошибка загрузки MP3-файлов: $e');
     }
+  }
+
+  // Метод для получения длительности аудио
+  Future<Duration> _getAudioDuration(String filePath) async {
+    final player = AudioPlayer();
+    await player.setSourceDeviceFile(filePath);
+    final duration = await player.getDuration() ?? Duration.zero;
+    await player.dispose(); // Освобождаем ресурсы
+    return duration;
+  }
+
+  // Форматирование Duration в строку (минуты:секунды)
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$minutes:$seconds';
   }
 
   void _onItemTapped(int index) {
@@ -203,17 +226,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                   },
                                   size: 100,
                                   imageUrl: playlist['imageUrl'],
-                                  
                                 ),
-                                PlaylistButton(
-                                  text: 'Добавить',
-                                  color1: Colors.grey,
-                                  color2: Colors.grey,
-                                  icon: Icons.add,
-                                  onPressed: _addNewPlaylist,
-                                  size: 100,
-                                  imageUrl: null,
-                                )
+                              PlaylistButton(
+                                text: 'Добавить',
+                                color1: Colors.grey,
+                                color2: Colors.grey,
+                                icon: Icons.add,
+                                onPressed: _addNewPlaylist,
+                                size: 100,
+                                imageUrl: null,
+                              )
                             ],
                           ),
                         ),
@@ -243,7 +265,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             return RecentTrackItem(
                               title: track['title']!,
                               artist: track['artist']!,
-                              duration: track['duration']!,
+                              duration: track['duration']!, // Используем реальную длительность
                               onPressed: () {
                                 Navigator.push(
                                   context,
@@ -253,8 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       artist: track['artist']!,
                                       imageUrl:
                                           'assets/images/default_song_image.png',
-                                      duration: const Duration(
-                                          minutes: 3, seconds: 30),
+                                      duration: _parseDuration(track['duration']!),
                                     ),
                                   ),
                                 );
@@ -460,5 +481,12 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
     );
+  }
+  
+  Duration _parseDuration(String duration) {
+    List<String> parts = duration.split(':');
+    int minutes = int.parse(parts[0]);
+    int seconds = int.parse(parts[1]);
+    return Duration(minutes: minutes, seconds: seconds);
   }
 }
