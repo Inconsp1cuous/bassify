@@ -203,7 +203,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                   },
                                   size: 100,
                                   imageUrl: playlist['imageUrl'],
+                                  
                                 ),
+                                PlaylistButton(
+                                  text: 'Добавить',
+                                  color1: Colors.grey,
+                                  color2: Colors.grey,
+                                  icon: Icons.add,
+                                  onPressed: _addNewPlaylist,
+                                  size: 100,
+                                  imageUrl: null,
+                                )
                             ],
                           ),
                         ),
@@ -263,7 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 right: 0,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withOpacity(0.7),
                   ),
                   child: BottomNavigationBar(
                     backgroundColor: Colors.transparent,

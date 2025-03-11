@@ -1,24 +1,68 @@
 import 'package:flutter/material.dart';
-import 'package:Bassify/screens/home_screen.dart'; // Импортируем HomeScreen
-import 'package:Bassify/screens/equalizer_screen.dart'; // Импортируем EqualizerScreen
-import 'package:Bassify/screens/library_screen.dart'; // Импортируем LibraryScreen
-import 'package:Bassify/screens/song_screen.dart'; // Импортируем SongPage
+import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:Bassify/screens/home_screen.dart';
+import 'package:Bassify/screens/equalizer_screen.dart';
+import 'package:Bassify/screens/library_screen.dart';
+import 'package:Bassify/screens/song_screen.dart';
+import 'dart:convert';
 
-class PlaylistScreen extends StatelessWidget {
-  final String playlistName; // Название плейлиста
-  final String? imageUrl; // URL изображения плейлиста (может быть null)
-  final IconData icon; // Иконка плейлиста
+class PlaylistScreen extends StatefulWidget {
+  final String playlistName;
+  final String? imageUrl;
+  final IconData icon;
 
   const PlaylistScreen({
     Key? key,
     required this.playlistName,
     this.imageUrl,
-    required this.icon, // Иконка плейлиста
+    required this.icon,
   }) : super(key: key);
 
   @override
+  _PlaylistScreenState createState() => _PlaylistScreenState();
+}
+
+class _PlaylistScreenState extends State<PlaylistScreen> {
+  List<Map<String, String>> songs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSongs();
+  }
+
+  Future<void> _loadSongs() async {
+    try {
+      // Загружаем AssetManifest.json
+      final manifestContent = await rootBundle.loadString('AssetManifest.json');
+      final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+
+      // Фильтруем только MP3-файлы в assets/images/
+      final List<String> mp3Files = manifestMap.keys
+          .where((String key) =>
+              key.startsWith('assets/images/') && key.endsWith('.mp3'))
+          .toList();
+
+      setState(() {
+        songs = mp3Files.map((file) {
+          String fileName = file.split('/').last;
+          return {
+            'title': fileName.replaceAll('.mp3', ''),
+            'artist': 'Unknown Artist',
+            'duration': '00:00',
+            'path': file,
+            'imageUrl': 'assets/images/default_song_image.png', // Заглушка для изображения
+          };
+        }).toList();
+      });
+    } catch (e) {
+      print('Ошибка загрузки MP3-файлов: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Стандартные размеры для имитации экрана телефона
     double phoneWidth = 412;
     double phoneHeight = 917;
 
@@ -39,7 +83,7 @@ class PlaylistScreen extends StatelessWidget {
                     icon: Image.asset(
                       'assets/images/arrow_back_icon.png',
                       color: Colors.white,
-                    ), // Кастомная иконка
+                    ),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -50,28 +94,26 @@ class PlaylistScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Область под картинку
                       Center(
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20), // Радиус скругления углов
-                          child: imageUrl != null
+                          borderRadius: BorderRadius.circular(20),
+                          child: widget.imageUrl != null
                               ? Image.asset(
-                                  imageUrl!, // Используем переданное изображение
+                                  widget.imageUrl!,
                                   width: 200,
                                   height: 200,
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) {
-                                    // Запасное изображение, если основное не загрузилось
-                                    return _buildIconPlaceholder(icon);
+                                    return _buildIconPlaceholder(widget.icon);
                                   },
                                 )
-                              : _buildIconPlaceholder(icon), // Отображаем иконку, если изображение отсутствует
+                              : _buildIconPlaceholder(widget.icon),
                         ),
                       ),
                       const SizedBox(height: 24),
                       Center(
                         child: Text(
-                          playlistName, // Используем переданное название плейлиста
+                          widget.playlistName,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 24,
@@ -80,36 +122,41 @@ class PlaylistScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      _buildSong(context, 'Coffe', 'Kainbeats', '01:44', 'assets/images/song1.png'),
-                      _buildSong(context, 'raindrops', 'rainyyxx', '02:03', 'assets/images/song2.png'),
-                      _buildSong(context, 'Tokyo', 'SmYang', '01:40', 'assets/images/song3.png'),
-                      _buildSong(context, 'Lullaby', 'iamfinerow', '04:12', 'assets/images/song4.png'),
-                      _buildSong(context, 'Back To Her Men', 'Demien Rice', '03:07', 'assets/images/song5.png'),
-                      _buildSong(context, 'Hoting Bling', 'Bille Elish', '03:00', 'assets/images/song6.png'),
-                      _buildSong(context, 'Antretor', 'yann tiarsen', '02:10', 'assets/images/song7.png'),
-                      _buildSong(context, 'Nightmare', 'Halsey', '01:49', 'assets/images/song8.png'),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: songs.length,
+                        itemBuilder: (context, index) {
+                          final song = songs[index];
+                          return _buildSong(
+                            context,
+                            song['title']!,
+                            song['artist']!,
+                            song['duration']!,
+                            song['imageUrl']!,
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
               ),
-
-              // Полупрозрачный BottomNavigationBar
               Positioned(
                 bottom: 0,
                 left: 0,
                 right: 0,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5), // Полупрозрачный черный фон
+                    color: Colors.black.withOpacity(0.5),
                   ),
                   child: BottomNavigationBar(
-                    backgroundColor: Colors.transparent, // Прозрачный фон
+                    backgroundColor: Colors.transparent,
                     items: const <BottomNavigationBarItem>[
                       BottomNavigationBarItem(
                         icon: ImageIcon(
                           AssetImage('assets/images/home_icon.png'),
                           size: 24,
-                          color: Colors.white, // Цвет иконки (непрозрачный)
+                          color: Colors.white,
                         ),
                         label: 'Home',
                       ),
@@ -117,7 +164,7 @@ class PlaylistScreen extends StatelessWidget {
                         icon: ImageIcon(
                           AssetImage('assets/images/equalizer_icon.png'),
                           size: 24,
-                          color: Colors.white, // Цвет иконки (непрозрачный)
+                          color: Colors.white,
                         ),
                         label: 'Equalizer',
                       ),
@@ -125,16 +172,15 @@ class PlaylistScreen extends StatelessWidget {
                         icon: ImageIcon(
                           AssetImage('assets/images/library_icon.png'),
                           size: 24,
-                          color: Color(0xFF6200EE), // Цвет иконки (непрозрачный)
+                          color: Color(0xFF6200EE),
                         ),
                         label: 'Library',
                       ),
                     ],
-                    currentIndex: 2, // Активная иконка (Library)
-                    selectedItemColor: const Color(0xFF6200EE), // Цвет выбранной иконки (непрозрачный)
-                    unselectedItemColor: Colors.white54, // Цвет невыбранной иконки (полупрозрачный)
+                    currentIndex: 2,
+                    selectedItemColor: const Color(0xFF6200EE),
+                    unselectedItemColor: Colors.white54,
                     onTap: (index) {
-                      // Обработка нажатий
                       switch (index) {
                         case 0:
                           Navigator.pushReplacement(
@@ -149,7 +195,6 @@ class PlaylistScreen extends StatelessWidget {
                           );
                           break;
                         case 2:
-                          // Уже на LibraryScreen, ничего не делаем
                           break;
                       }
                     },
@@ -163,7 +208,6 @@ class PlaylistScreen extends StatelessWidget {
     );
   }
 
-  // Виджет для отображения иконки, если изображение отсутствует
   Widget _buildIconPlaceholder(IconData icon) {
     return Container(
       width: 200,
@@ -187,7 +231,6 @@ class PlaylistScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: InkWell(
         onTap: () {
-          // Переход на SongPage с передачей данных
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -195,36 +238,34 @@ class PlaylistScreen extends StatelessWidget {
                 songTitle: title,
                 artist: artist,
                 imageUrl: imagePath,
-                duration: _parseDuration(duration), // Вызываем метод _parseDuration
+                duration: _parseDuration(duration),
               ),
             ),
           );
         },
         child: Row(
           children: [
-            // Обложка песни
             Container(
               width: 60,
               height: 60,
               margin: const EdgeInsets.only(right: 16),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12), // Закруглённые углы
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.3), // Светлая рамка
+                  color: Colors.white.withOpacity(0.3),
                   width: 2,
                 ),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(10), // Закруглённые углы внутри рамки
+                borderRadius: BorderRadius.circular(10),
                 child: Image.asset(
                   imagePath,
                   width: 60,
                   height: 60,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
-                    // Запасное изображение, если основное не загрузилось
                     return Container(
-                      color: Colors.grey.withOpacity(0.3), // Фон, если изображение отсутствует
+                      color: Colors.grey.withOpacity(0.3),
                       child: Icon(
                         Icons.music_note,
                         color: Colors.white.withOpacity(0.5),
@@ -235,7 +276,6 @@ class PlaylistScreen extends StatelessWidget {
                 ),
               ),
             ),
-            // Название песни и исполнитель
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,7 +299,6 @@ class PlaylistScreen extends StatelessWidget {
                 ],
               ),
             ),
-            // Длительность песни
             if (duration.isNotEmpty)
               Text(
                 duration,
@@ -274,7 +313,6 @@ class PlaylistScreen extends StatelessWidget {
     );
   }
 
-  // Метод для преобразования строки длительности в Duration
   Duration _parseDuration(String duration) {
     List<String> parts = duration.split(':');
     int minutes = int.parse(parts[0]);

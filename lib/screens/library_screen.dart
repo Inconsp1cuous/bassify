@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:Bassify/screens/home_screen.dart'; // Импортируем HomeScreen
-import 'package:Bassify/screens/equalizer_screen.dart'; // Импортируем EqualizerScreen
-import 'package:Bassify/screens/song_screen.dart'; // Импортируем SongPage
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:Bassify/screens/home_screen.dart';
+import 'package:Bassify/screens/equalizer_screen.dart';
+import 'package:Bassify/screens/song_screen.dart';
+import 'dart:convert';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -12,6 +14,43 @@ class LibraryScreen extends StatefulWidget {
 
 class _LibraryScreenState extends State<LibraryScreen> {
   int _selectedIndex = 2; // Индекс выбранной страницы (LibraryScreen)
+  List<Map<String, String>> songs = []; // Список песен
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSongs(); // Загружаем песни при инициализации
+  }
+
+  // Метод для загрузки песен из assets
+  Future<void> _loadSongs() async {
+    try {
+      // Загружаем AssetManifest.json
+      final manifestContent = await rootBundle.loadString('AssetManifest.json');
+      final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+
+      // Фильтруем только MP3-файлы в assets/images/
+      final List<String> mp3Files = manifestMap.keys
+          .where((String key) =>
+              key.startsWith('assets/images/') && key.endsWith('.mp3'))
+          .toList();
+
+      setState(() {
+        songs = mp3Files.map((file) {
+          String fileName = file.split('/').last;
+          return {
+            'title': fileName.replaceAll('.mp3', ''),
+            'artist': 'Unknown Artist',
+            'duration': '00:00',
+            'path': file,
+            'imageUrl': 'assets/images/default_song_image.png', // Заглушка для изображения
+          };
+        }).toList();
+      });
+    } catch (e) {
+      print('Ошибка загрузки MP3-файлов: $e');
+    }
+  }
 
   // Метод для обработки нажатий на BottomNavigationBar
   void _onItemTapped(int index) {
@@ -83,23 +122,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         ),
                         const SizedBox(height: 16), // Отступ перед списком песен
                         Expanded(
-                          child: ListView(
-                            children: [
-                              _buildSong('Coffe', 'Kainbeats', '01:44', 'assets/images/song1.png'),
-                              _buildSong('raindrops', 'rainyyxx', '02:03', 'assets/images/song2.png'),
-                              _buildSong('Tokyo', 'SmYang', '01:40', 'assets/images/song3.png'),
-                              _buildSong('Lullaby', 'iamfinerow', '04:12', 'assets/images/song4.png'),
-                              _buildSong('Back To Her Men', 'Demien Rice', '03:07', 'assets/images/song5.png'),
-                              _buildSong('Hoting Bling', 'Bille Elish', '03:00', 'assets/images/song6.png'),
-                              _buildSong('Antretor', 'yann tiarsen', '02:10', 'assets/images/song7.png'),
-                              _buildSong('Хайпим', 'Yanix', '03:34', 'assets/images/song8.png'),
-                              _buildSong('Треп хата', 'Yanix', '01:49', 'assets/images/song8.png'),
-                              _buildSong('Pimpin', 'Yanix', '01:49', 'assets/images/song8.png'),
-                              _buildSong('Алкоголь', 'Yanix', '01:49', 'assets/images/song8.png'),
-                              _buildSong('Не говори им', 'Yanix', '01:49', 'assets/images/song8.png'),
-                              _buildSong('Ye', 'PIKA', '02:00', 'assets/images/song8.png'),
-                              _buildSong('Не отпускай меня', 'Нейромонах Феофан feat. oldpianogirl', '04:43', 'assets/images/song8.png'),
-                            ],
+                          child: ListView.builder(
+                            itemCount: songs.length,
+                            itemBuilder: (context, index) {
+                              final song = songs[index];
+                              return _buildSong(
+                                song['title']!,
+                                song['artist']!,
+                                song['duration']!,
+                                song['imageUrl']!,
+                              );
+                            },
                           ),
                         ),
                       ],
