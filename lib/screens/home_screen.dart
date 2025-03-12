@@ -63,57 +63,27 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _loadMp3Files();
+    _loadStaticTracks(); // Загружаем статичные треки вместо парсинга
   }
 
-  Future<void> _loadMp3Files() async {
-    try {
-      // Загружаем AssetManifest.json
-      final manifestContent = await rootBundle.loadString('AssetManifest.json');
-      final Map<String, dynamic> manifestMap = json.decode(manifestContent);
-
-      // Фильтруем только MP3-файлы в assets/images/
-      final List<String> mp3Files = manifestMap.keys
-          .where((String key) =>
-              key.startsWith('assets/images/') && key.endsWith('.mp3'))
-          .toList();
-
-      // Загружаем длительность для каждого MP3-файла
-      List<Map<String, String>> tracks = [];
-      for (var file in mp3Files) {
-        final duration = await _getAudioDuration(file);
-        String fileName = file.split('/').last;
-        tracks.add({
-          'title': fileName.replaceAll('.mp3', ''),
+  // Загрузка статичных треков
+  void _loadStaticTracks() {
+    setState(() {
+      recentTracks = [
+        {
+          'title': 'Example Song 1',
           'artist': 'Unknown Artist',
-          'duration': _formatDuration(duration), // Форматируем длительность
-          'path': file,
-        });
-      }
-
-      setState(() {
-        recentTracks = tracks;
-      });
-    } catch (e) {
-      print('Ошибка загрузки MP3-файлов: $e');
-    }
-  }
-
-  // Метод для получения длительности аудио
-  Future<Duration> _getAudioDuration(String filePath) async {
-    final player = AudioPlayer();
-    await player.setSourceDeviceFile(filePath);
-    final duration = await player.getDuration() ?? Duration.zero;
-    await player.dispose(); // Освобождаем ресурсы
-    return duration;
-  }
-
-  // Форматирование Duration в строку (минуты:секунды)
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return '$minutes:$seconds';
+          'duration': '03:30',
+          'path': 'assets/images/example_song_1.mp3',
+        },
+        {
+          'title': 'Example Song 2',
+          'artist': 'Unknown Artist',
+          'duration': '04:15',
+          'path': 'assets/images/example_song_2.mp3',
+        },
+      ];
+    });
   }
 
   void _onItemTapped(int index) {
@@ -155,6 +125,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 appBar: AppBar(
                   backgroundColor: const Color(0xFF1D1B29),
                   elevation: 0,
+                  actions: [
+                    // Статичная иконка в AppBar
+                    IconButton(
+                      icon: const Icon(Icons.music_note, color: Colors.white),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SongPage(
+                              songTitle: 'Static Song',
+                              artist: 'Static Artist',
+                              imageUrl: 'assets/images/default_song_image.png',
+                              duration: const Duration(minutes: 3, seconds: 30),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
                 body: SingleChildScrollView(
                   padding:
@@ -265,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             return RecentTrackItem(
                               title: track['title']!,
                               artist: track['artist']!,
-                              duration: track['duration']!, // Используем реальную длительность
+                              duration: track['duration']!,
                               onPressed: () {
                                 Navigator.push(
                                   context,
@@ -282,6 +271,30 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                             );
                           },
+                        ),
+                      ),
+                      // Статичная иконка в теле страницы
+                      const SizedBox(height: 24),
+                      Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SongPage(
+                                  songTitle: 'Static Song',
+                                  artist: 'Static Artist',
+                                  imageUrl: 'assets/images/default_song_image.png',
+                                  duration: const Duration(minutes: 3, seconds: 30),
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Icon(
+                            Icons.music_note,
+                            size: 50,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ],

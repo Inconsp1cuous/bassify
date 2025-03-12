@@ -1,8 +1,40 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:Bassify/screens/home_screen.dart'; // Импортируем HomeScreen
 import 'package:Bassify/screens/equalizer_screen.dart'; // Импортируем EqualizerScreen
 import 'package:Bassify/screens/library_screen.dart'; // Импортируем LibraryScreen
 import 'package:audioplayers/audioplayers.dart';
+import 'package:file_selector_aurora/file_selector_aurora.dart';
+import 'package:file_selector/file_selector.dart' as fs;
+
+class AudioFileHandler extends FileSelectorAurora {
+  final AudioPlayer audioPlayer;
+
+  AudioFileHandler(this.audioPlayer);
+
+  Future<void> openAudioFile() async {
+    const fs.XTypeGroup typeGroup = fs.XTypeGroup(
+      extensions: <String>['mp3'], // Указываем, что нам нужны только .mp3 файлы
+    );
+
+    // Получаем домашнюю директорию пользователя
+    var home = Platform.environment['HOME'];
+
+    // Открываем диалог выбора файла
+    fs.XFile? file = await openFile(
+      acceptedTypeGroups: <fs.XTypeGroup>[typeGroup], // Фильтр по типу файла
+      initialDirectory: home, // Начальная директория
+    );
+
+    if (file != null) {
+      // Откладываем выполнение до завершения текущего кадра
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        // Устанавливаем выбранный файл в аудиоплеер
+        await audioPlayer.setSourceDeviceFile(file.path);
+      });
+    }
+  }
+}
 
 class SongPage extends StatefulWidget {
   final String songTitle; // Название трека
@@ -15,8 +47,7 @@ class SongPage extends StatefulWidget {
     required this.songTitle,
     required this.artist,
     this.imageUrl = 'assets/images/song_image.png', // Дефолтное изображение
-    this.duration =
-        const Duration(minutes: 3, seconds: 46), // Дефолтная длительность
+    this.duration = const Duration(minutes: 3, seconds: 46), // Дефолтная длительность
   }) : super(key: key);
 
   @override
@@ -25,6 +56,8 @@ class SongPage extends StatefulWidget {
 
 class _SongPageState extends State<SongPage> {
   final audioPlayer = AudioPlayer();
+  late AudioFileHandler audioFileHandler;
+
   bool isPlaying = false;
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
@@ -33,7 +66,10 @@ class _SongPageState extends State<SongPage> {
   void initState() {
     super.initState();
 
-    setAudio();
+    audioFileHandler = AudioFileHandler(audioPlayer);
+
+    // Инициализация аудиоплеера
+    audioFileHandler.openAudioFile();
 
     audioPlayer.onPlayerStateChanged.listen((state) {
       setState(() {
@@ -53,16 +89,8 @@ class _SongPageState extends State<SongPage> {
       });
     });
   }
-  
 
-  Future setAudio() async {
-    final player = AudioCache(prefix: 'assets/images/');
-    final url = await player.load('${widget.songTitle}.mp3');
-    await audioPlayer.setSourceDeviceFile(url.path);
-  }
-
-  Duration currentPosition =
-      const Duration(minutes: 1, seconds: 28); // Текущее время трека
+  Duration currentPosition = const Duration(minutes: 1, seconds: 28); // Текущее время трека
   bool isShuffleActive = false;
   bool isRepeatActive = false;
   int _selectedIndex = 0; // Индекс выбранной страницы
@@ -73,9 +101,6 @@ class _SongPageState extends State<SongPage> {
     } else {
       await audioPlayer.resume();
     }
-    // setState(() {
-    //   isPlaying = !isPlaying;
-    // });
   }
 
   void updateCurrentPosition(Duration newPosition) {
@@ -219,26 +244,6 @@ class _SongPageState extends State<SongPage> {
                           await audioPlayer.resume();
                         },
                       ),
-
-                      // Padding(
-                      //     padding: const EdgeInsets.symmetric(horizontal: 16),
-                      //     child: Row(
-                      //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //         children: [
-                      //           Text(formatDuration(position)),
-                      //           Text(formatDuration(duration))
-                      //         ])),
-
-                      // // Линия прогресса
-                      // LinearProgressIndicator(
-                      //   value: currentPosition.inSeconds /
-                      //       widget.duration.inSeconds,
-                      //   backgroundColor: Colors.white.withOpacity(0.1),
-                      //   valueColor:
-                      //       const AlwaysStoppedAnimation<Color>(Colors.white),
-                      // ),
-                      // const SizedBox(
-                      //     height: 8), // Отступ между линией и цифрами времени
 
                       // Время трека (под линией)
                       Row(
@@ -393,7 +398,4 @@ class _SongPageState extends State<SongPage> {
       ),
     );
   }
-
-
-
 }
